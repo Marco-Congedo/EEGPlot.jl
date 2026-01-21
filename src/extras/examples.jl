@@ -51,7 +51,6 @@ eegplot(X, sr, sensors; start_pos=345)
 # plot from sample 345 to sample 345+sr*2 (2s)
 eegplot(X, sr, sensors; start_pos=129, win_length = sr*4)
 
-true
 
 
 
