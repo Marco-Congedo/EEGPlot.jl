@@ -6,11 +6,10 @@
 **EEGPlot** in a julia package to plot electroencephalographic data (EEG).
 
 It can be used in two modes:
- - STATIC: for creating figures
+ - STATIC: mainly to create figures
  - INTERACTIVE: to inspect the data
 
-Here is an example of creating a simple static image
-<img src="docs/src/assets/Fig1.png" width="780" style="display: block; margin: auto;">
+![Animation](https://github.com/user-attachments/assets/4aa7dcca-4207-4a89-a764-a0d101f26f94)
 
 ## 🧩 Requirements
 
