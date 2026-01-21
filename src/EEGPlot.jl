@@ -4,6 +4,7 @@ using Makie
 using GLFW
 using Statistics
 using ImageClipboard 
+using PrecompileSignatures: @precompile_signatures
 
 # colors for printing messages
 const titleFont     = "\x1b[38;5;71m"
@@ -71,65 +72,8 @@ function Makie.process_interaction(
     return Consume(false)
 end
 
+##########################################################
 
-#= possible events:
-leftdown
-leftdragstart
-leftdrag
-leftdragstop
-leftup
-rightdown
-rightdragstart
-rightdrag
-rightdragstop
-rightup
-...
-=#
-
-
-"""
-function eegplot(X, sr, X_labels;
-
-    fig_size = (1400, 800),
-    X_title = "",
-    X_color = :grey24,
-    overlay = nothing,
-    overlay_color = :firebrick,
-    diff_color = :cornflowerblue,
-    Y = nothing,
-    Y_labels = nothing,
-    Y_title = "",
-    Y_color = :darkgreen,
-    i_panel = true,
-    i_panel_font = "DejaVu Sans",
-    i_panel_font_size = 14,
-    start_pos::Int = 1,
-    win_length::Int = 0,
-    px_per_sec = 240, 
-    init_scale = 0.61803.. (golden_ratio),
-    scale_change = 0.1,
-    image_quality = 1,
-) where T<:Real
-
-Interactive EEG visualization.
-
-*Examples*
-using Eegle, EEGPlot
-using GLMakie # or CairoMakie, or WGLMakie
-
-# From Eegle.jl
-X, sr = readASCII(EXAMPLE_Normative_1), 128
-sensors = readSensors(EXAMPLE_Normative_1_sensors)
-
-eegplot(X, sr, sensors)
-
-# Both overlay and two panels
-eegplot(X, sr, sensors; overlay=X, Y=X)
-
-# Change pixels per second
-eegplot(X, sr, sensors; px_per_sec = 200)
-
-"""
 function eegplot(
         X::Matrix{T}, 
         sr::Number, 
@@ -636,5 +580,8 @@ function eegplot(
     println(defaultFont, "Done ")
     return fig
 end
+
+# Generate and run `precompile` directives.
+@precompile_signatures(EEGPlot)
 
 end # module
