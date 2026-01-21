@@ -1,10 +1,11 @@
 using Documenter
+using Bonito
 using EEGPlot
 
 makedocs(
     sitename = "EEGPlot",
     authors="Marco Congedo, Tomas Ros",
-    format = Documenter.HTML(),
+    format = Documenter.HTML(repolink = "..."),
     modules = [EEGPlot],
     pages = [
         "index.md"

@@ -1,8 +1,10 @@
 authors = ["Marco Congedo, Tom Ros"]
 
 [deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
 DocumenterInterLinks = "d12716ef-a0f6-4df4-a9f1-a5a34e75c656"
 DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 EEGPlot = "7b5c3b30-84a4-4b07-a630-c21dc8c95940"
+Eegle = "1260424e-cd79-4b74-a0ea-47c69c296663"
