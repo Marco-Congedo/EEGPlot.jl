@@ -1,16 +1,38 @@
 # EEGPlot.jl
 
-**EEGPlot** in a julia package to plot electroencephalographic data (EEG).
+A *julia* package to plot electroencephalographic recording (EEG) and event-related potentials (ERP). It is based on [Makie.jl](https://docs.makie.org/).
 
-It can be used in two modes:
- - STATIC: for creating figures
- - INTERACTIVE: to inspect the data
+## ⚙️ Static and Interactive mode
 
-## Requirements 
+Two backends for `Makie.jl` are supported:
 
-**Julia**: version ≥ 1.10
+- `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures;
+- `GLMakie.jl`, which produces an **INTERACTIVE** plot — for data inspection.
 
-## ⚙️ Installation
+!!! tip "Switching backend"
+    To switch from one backend to the other, use `GLMakie.activate!()` and `CairoMakie.activate!()`.
+
+***
+
+## 📈 Datasets
+
+**EEGPlot** can plot several datasets at the same time, employing two panels:
+
+- the *upper panel* can show the dataset ``X \in \mathbb{R}^{T \times N_X}``, where ``T`` is the number of time samples and ``N_X`` the number of channels, overlay another dataset ``\in \mathbb{R}^{T \times N_X}``, and show the difference between the two;
+- the *lower panel* can show a third dataset, ``Y \in \mathbb{R}^{T \times N_Y}``, where ``N_Y`` can be different from ``N_X``.
+
+When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
+
+***
+
+## 🧩 Requirements 
+
+- *julia* version ≥ 1.11,
+- the *CairoMakie* or *GLMakie* backend for *Makie.jl*, or both.
+
+***
+
+## 📦 Installation
 
 Execute the following commands in Julia's REPL:
 
@@ -18,14 +40,301 @@ Execute the following commands in Julia's REPL:
 ]add EEGPlot
 ```
 
+***
+
+## —͟͟͞͞★ Quick Start
+
+!!! note
+    All examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
+    and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these packages:
+
+    ```julia
+    ]add Eegle, GLMakie, CairoMakie
+    ```
+***
+
+In this section, working examples that you can run about:
+
+- [Static Plots](@ref) 
+- [Multiple Datasets](@ref) 
+- [Interactive Plot](@ref) 
+- [ERPs](@ref)
+
+See also [Examples](@ref)
+
+***
+
+### Static Plots
+
+```@example Static; eval=false
+using EEGPlot, Eegle, CairoMakie
+
+# read example EEG data, sampling rate and sensor labels from Eegle
+X, sr = readASCII(EXAMPLE_Normative_1), 128;
+sensors = readSensors(EXAMPLE_Normative_1_sensors);
+
+# plot EEG
+eegplot(X, sr, sensors; fig_size=(814, 450)) 
+
+```
+
+***
+
+### Multiple Datasets
+
+The following example illustrates the [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis). The workflow is :
+
+- compute ``u``, the principal axis of data ``X``, as the eigenvector of its covariance matrix associated to the largest eigenvalue,
+- compute ``y``, the principal component time series (principal component score or activation), as 
+```math
+y = X u,
+```
+- compute ``P``, the data ``X`` projected on this component (subspace projection), as
+```math
+P = y u^T,
+```
+- plot ``X`` and overlay ``P`` on the upper panel, ``y`` on the lower panel.
+
+```@example Multiple; eval=false
+using EEGPlot, Eegle, LinearAlgebra, CairoMakie
+
+# read example EEG data, sampling rate and sensor labels from Eegle
+X, sr = readASCII(EXAMPLE_Normative_1), 128;
+sensors = readSensors(EXAMPLE_Normative_1_sensors);
+
+u = eigvecs(covmat(X; covtype=SCM))[:, end]
+y = X * reshape(u, :, 1) # using reshape, y will be a Tx1 Matrix
+P = y * u'
+eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1, fig_size=(814, 614))
+```
+In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in green.
+
+***
+
+### Interactive Plot
+
+It is obtained using the *GLMakie* backend instead. For example, to obtain an interactive plot
+of the PCA above, we would do
+
+```julia
+using GLMakie
+
+# since you may have been using CairoMakie, make sure to switch backend
+GLMakie.activate!()
+
+# read example EEG data, sampling rate and sensor labels from Eegle
+X, sr = readASCII(EXAMPLE_Normative_1), 128;
+sensors = readSensors(EXAMPLE_Normative_1_sensors);
+
+u = eigvecs(covmat(X; covtype=SCM))[:, end]
+y = X * reshape(u, :, 1) # using reshape, y will be a Tx1 Matrix
+P = y * u'
+
+# The syntax is exactly the same as above
+eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1)
+```
+The interactive plot allows to [interact](@ref "Interactions") with it. It looks like this:
+
+![](assets/fig2.png)
+
+Note that in addition to static plots, interactive plots feature:
+- a *central slider* to resize the upper and lower panels,
+- a *slider at the bottom of the window* to scroll the data,
+- an *help panel* summarizing the interaction controls.
+
+!!! warning "Check the task bar"
+    Interactive plots open as a separate window. The window may open minimized. 
+
+***
+
+### ERPs
+
+For an example of plotting evoked potentials, we will consider the example P300 file
+provided by `Eegle.jl`. Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
+for details on the ERP computations.
+
+```@example ERP; eval=false
+using EEGPlot, Eegle, CairoMakie
+CairoMakie.activate!()
+
+# read the example file for the P300 BCI paradigm
+o = readNY(EXAMPLE_P300_1, rate=4, upperLimit=1.2, bandPass=(1, 24)) # See Eegle.readNY
+
+# compute means (adaptive weights and multivariate regression)
+M = mean(o; overlapping=true, weights=:a) # See Eegle.mean
+
+# target and non-target average ERP
+# Upsampled to obtain nicer plots
+T_ERP = M[findfirst(isequal("target"), o.clabels)]
+NT_ERP = M[findfirst(isequal("nontarget"), o.clabels)]
+
+eegplot(T_ERP, o.sr, o.sensors; 
+        fig_size=(812, 450),
+        overlay=NT_ERP, 
+        Y_labels = o.sensors,
+        win_length=o.sr,
+        px_per_sec=720,
+        init_scale=0.7,
+        X_title = "EPR target (grey) and nontarget (red)")
+```
+
+***
+
+## 🔌 API
+
+The package exports one function only:
+
+```julia
+function eegplot(X, sr, X_labels; args...)
+```
+
+### Arguments
+
+1. the dataset ``X`` for the upper panel (Matrix of Real)
+2. the sampling rate of ``X`` (Int)
+3. the labels of ``X`` (Vector of String), which can be omitted.
+
+### Optional Keyword Arguments (kwargs)
+
+| Argument          | Type              | Description               | Default value     |
+|:------------------|:------------------|:--------------------------|:------------------|
+| `fig_size`        | 2-tuple of Int    | size of the plot          | (1400, 800)       |
+| `X_title`         | String            | title of the upper panel  | nothing           |
+| `X_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of ``X`` dataset | :grey24 | 
+| `overlay`         | Matrix of Real    | ``overlay`` dataset       | nothing           |
+| `overlay_color`   | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the ``overlay`` dataset| :firebrick |
+| `diff_color`      | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the difference ``X - overlay``| :cornflower |
+| `Y`               | Matrix of Real    | lower panel dataset       | nothing           |
+| `Y_labels`        | Vector of String  | lower panel labels        | nothing           |
+| `Y_title`         | String            | title of the lower panel  | nothing           |
+| `Y_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of lower panel dataset| :darkgreen|
+| `Y_size`          | 0.05 < Real < 0.95 | title of the lower panel  | nothing           |
+| `i_panel`         | Bool              | help panel visibility     | true              |
+| `i_panel_font`    | String            | help panel font           | "DejaVu Sans"     |
+| `i_panel_font_size`| Int ≥ 4          | help panel font size     | 14                |
+| `start_pos`       | Int ≥ 1           | first sample to show      | 1 (first sample)  |
+| `win_length`      | Int ≥ 0, 0 = Auto | number of samples to show | 0                 |
+| `px_per_sec`      | Int ≥ 100         | number of pixels to cover 1s | 200            |
+| `init_scale`      | Real > 0          | initial scaling           | 0.61803...        |
+| `scale_change`    | Real > 0          | speed of scale change using [Interactions](@ref) | 0.1   |
+| `image_quality`   |  1 ≤ Int ≤ 4      | Image quality for saving using [Interactions](@ref) | 1  |
+
+***
+
+## 💡 Examples
+
+In these examples it is assumed the existence of some data ``X`` with sampling rate `sr` and labels `sensors`.
+
+```julia
+using EEGPlot, CairoMakie # or GLMakie for interactive plots
+
+# plot with default settings
+eegplot(X, sr, sensors)
+
+# save a figure with large size and high quality (ppi)
+# for this CairoMakie should be used
+fig = eegplot(X, sr, sensors; 
+            fig_size = (3000, 1000), image_quality = 4)
+save("figure.png", fig)
+
+# plot without providing labels for X
+eegplot(X, sr)
+
+# two panels; Y must have the same # of samples as X
+eegplot(X, sr, sensors; Y=X)
+
+# overlay; must have the same # of samples and of channels as X
+eegplot(X, sr, sensors; overlay=X)
+
+# both overlay and two panels
+eegplot(X, sr, sensors; overlay=X, Y=X)
+
+# change pixels per second (time-constant)
+eegplot(X, sr, sensors; px_per_sec = 300)
+
+# notice that the data is plotted with the same time-constant
+# regardless the sampling rate. For example, doubling the sr
+using Eegle # for `resample`
+eegplot(resample(X, sr, 2), 256, sensors; px_per_sec = 300)
+
+# change titles and colors
+eegplot(X, sr, sensors; Y=X, 
+    X_title="This the title for the upper panel",
+    X_color=:blue,
+    Y_title="This the title for the lower panel",
+    Y_color=:darkviolet,
+    )
+
+# start plotting from second 2    
+heegplot(X, sr, sensors; start_pos=sr*2)
+
+# start plotting from an arbitrary sample (345)
+eegplot(X, sr, sensors; start_pos=345)
+
+# plot from sample 345 to sample 345+sr*2 (2s)
+eegplot(X, sr, sensors; start_pos=129, win_length = sr*4)
+
+```
+
+***
+
+## 🎮 Interactions
+
+The following commands are available only in [interactive mode](@ref "Static and Interactive mode").
+
+!!! note "Set Focus"
+    If the plot does not respond to the controls, set the focus on the plot by clicking anywhere on it.
+
+### ⌨ Keyboard controls
+
+*▴ Upper Panel*
+
+- *'X'*: show the ``X`` dataset
+- *'O'*: show the ``overlay`` dataset
+- *'B'*: show both ``X`` and ``overlay`` dataset
+- *'D'*: show the difference ``X - overlay``
+- *Shift + ↑/↓*: scale ``X`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+
+*▾ Lower Panel*
+
+- *'Y'*: toggle Y data (lower panel) visibility
+- *Ctrl + ↑/↓*: scale ``Y`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *Slider*: resize the lower panel
+
+*⌖ Navigation*
+- *←/→*: scroll backward and forward the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *↑/↓*: scale up and down the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *Page Up*: move to begin of dataset(s)
+- *Page Down*: move to end of dataset(s)
+
+*⚙ Tools*
+
+- *'M'*: toggle the status of the plot window (maximized/normal)
+- *'Esc'*: restore the normal status if the window is maximized
+- *'S'*: save the plot in the current directory as a *.png* file (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *'C'*: copy the plot to the clipboard (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *'H'*: toggle the visibility of the help panel
+
+### ⊕ Mouse Controls
+
+- *Click & Drag*: zoom along the time-axis
+- *Ctrl + Click*: reset the view as it was before zooming.
+
+***
+
 ## ✍️ About the authors
 
 Generative AI supervised by [Marco Congedo](https://sites.google.com/site/marcocongedo) and [Tomas Ros](https://www.tomasros.com/).
+
+***
 
 ## 🌱 Contribute
 
 Please contact the authors if you are interested in contributing.
 
-## 🎓 Documentation
+## 🧭 Index
 
-The package exports only function:
+```@contents
+Pages = ["index.md"]
+Depth = 3
+```

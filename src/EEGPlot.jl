@@ -80,20 +80,21 @@ function eegplot(
         X_labels::Union{Vector{String},Nothing} = nothing;
     fig_size::Tuple = (1400, 800),
     X_title::String = "",
-    X_color = :grey24,
+    X_color:: Symbol = :grey24,
     overlay::Union{Matrix{T}, Nothing} = nothing,
-    overlay_color = :firebrick,
-    diff_color = :cornflowerblue,
+    overlay_color:: Symbol = :firebrick,
+    diff_color:: Symbol = :cornflowerblue,
     Y::Union{Matrix{T}, Nothing} = nothing,
     Y_labels::Union{Vector{String},Nothing} = nothing,
     Y_title::String = "",
-    Y_color = :darkgreen,
+    Y_color:: Symbol = :darkgreen,
+    Y_size::Real = 0.5,
     i_panel::Bool = true,
     i_panel_font::String = "DejaVu Sans",
     i_panel_font_size::Int = 14,
     start_pos::Int = 1,
     win_length::Int = 0, 
-    px_per_sec::Int = 240, # Constant scale: about 240 pixels = 1 second
+    px_per_sec::Int = 200, # Constant scale: about 240 pixels = 1 second
     init_scale::T = 0.6180339887498948,
     scale_change::T = 0.1,
     image_quality::Int = 1,
@@ -108,6 +109,7 @@ function eegplot(
     #win_length > 0 && win_length ≥ mins || throw(ArgumentError("`win_length` must comprise at least sr/2 samples"))
     #1 < start_pos < size(X, 1) - mins || throw(ArgumentError("`start_pos` must verify 1 < start_pos < size(X, 1) (it is given samples)"))
     i_panel_font_size ≥ 4 || throw(ArgumentError("📉 argument `i_panel_font_size` must be at least 4"))
+    string(Makie.current_backend()) ∉ ("CairoMakie", "GLMakie") && throw(ErrorException("📉 eegplot supports only the CairoMakie and GLMakie backends for Makie"))
 
     # ----------------------
     # Screen & Scaling Logic
@@ -151,7 +153,9 @@ function eegplot(
   
     panel_visible = Observable(i_panel)
     y_panel_visible = Observable(!isnothing(Y))
-    vsplit = Observable(0.4) # Matches slider startvalue
+    vsplit = Observable(1 - Y_size) # Matches slider startvalue
+
+  
     # Initialize the picked channel observable
     picked_ch = Observable(0)
 
@@ -214,7 +218,7 @@ function eegplot(
         if is_interactive
             splitter = Slider(
                 axes_grid[2, 1],
-                range = 0.1:0.01:0.9,
+                range = 0.05:0.01:0.95,
                 startvalue = 1.0 - vsplit[],
                 linewidth = 7,
                 color_active = :grey50,
@@ -230,15 +234,17 @@ function eegplot(
                 if y_panel_visible[]
                     rowsize!(axes_grid, 1, Relative(vs))
                     rowsize!(axes_grid, 2, Fixed(10))
-                    rowsize!(axes_grid, 3, Relative(1.0 - vs))
+                    rowsize!(axes_grid, 3, Relative(1 - vs))
                 end
             end
         else
-            rowsize!(axes_grid, 1, Relative(0.5))
+            rowsize!(axes_grid, 1, Relative(1 - Y_size))
             rowsize!(axes_grid, 2, Fixed(0))
-            rowsize!(axes_grid, 3, Relative(0.5))
+            rowsize!(axes_grid, 3, Relative(Y_size))
         end
     end
+
+    notify(vsplit)
 
     # -----------------------------------------------------------
     # Axis Limits & Interaction Logic (The "Zoom" Fix)
@@ -302,14 +308,10 @@ function eegplot(
     # ----------------------
     instr_text = """
           CONTROLS
-
-     (click to set focus
-        if necessary)
-    
       
      ✦  ⌨ Keyboard  ✦
 
-    ▴ Up Panel
+    ▴ Upper Panel
     ─────────────────
     [X] show X data
     [O] show overlay
@@ -317,7 +319,7 @@ function eegplot(
     [D] show difference
     [Shift + ↑/↓] scale
     
-    ▾ Down Panel
+    ▾ Lower Panel
     ─────────────────
     [Y] toggle Y data
     [Ctrl + ↑/↓] scale

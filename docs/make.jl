@@ -1,20 +1,24 @@
 using Documenter
-using EEGPlot
+
+using Pkg
+Pkg.activate(@__DIR__)
+Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
+Pkg.instantiate()
+using EEGPlot 
 
 makedocs(
     sitename = "EEGPlot",
     authors="Marco Congedo, Tomas Ros",
-    format = Documenter.HTML(),
+    format = Documenter.HTML(repolink = "..."),
     modules = [EEGPlot],
     pages = [
-        "index.md"
+        "Home" => "index.md",
     ]
 )
 
 deploydocs(
-   repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
+   repo = "https://github.com/Marco-Congedo/EEGPlot.jl.git",
    branch = "gh-pages",
-   push_preview = true,
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
