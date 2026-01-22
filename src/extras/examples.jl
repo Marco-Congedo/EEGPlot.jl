@@ -26,12 +26,14 @@ eegplot(X, sr, sensors; overlay=X)
 # Both overlay and two panels
 eegplot(X, sr, sensors; overlay=X, Y=X)
 
-# Change pixels per second
-eegplot(X, sr, sensors; px_per_sec = 200)
+# Change pixels per second (time-constnat)
+eegplot(X, sr, sensors; px_per_sec = 300)
 
-# This way the data is plotted with the same time constant
-# regradles the sampling rate
-eegplot(resample(X, sr, 2), 256, sensors; px_per_sec = 200)
+# Notice that the data is plotted with the same time constant
+# regardless the sampling rate
+
+using Eegle
+eegplot(resample(X, sr, 2), 256, sensors; px_per_sec = 300)
 
 # Change titles and colors
 eegplot(X, sr, sensors; Y=X, 
@@ -45,7 +47,7 @@ eegplot(X, sr, sensors; Y=X,
 # start plotting from second 2    
 heegplot(X, sr, sensors; start_pos=sr*2)
 
-# start plotting from sample 345    
+# start plotting from an arbitrary sample (345)
 eegplot(X, sr, sensors; start_pos=345)
 
 # plot from sample 345 to sample 345+sr*2 (2s)

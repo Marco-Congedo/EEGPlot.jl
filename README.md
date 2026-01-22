@@ -13,10 +13,11 @@ It can be used in two modes:
 
 ## 🧩 Requirements
 
-**Julia**: version ≥ 1.11
+- *julia* version ≥ 1.11,
+- either the *CairoMakie* (static plot) or *GLMakie*(interactive plot) backend for *Makie.jl*.
 
 ---
-## ⚙️ Installation
+## 📦 Installation
 
 Execute the following command in julia's REPL:
 
@@ -40,4 +41,5 @@ Please contact the (human) authors if you are interested in contributing.
 
 ---
 ## 🎓 Documentation   
+
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl/stable) 

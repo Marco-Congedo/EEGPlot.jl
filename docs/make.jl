@@ -8,7 +8,7 @@ makedocs(
     format = Documenter.HTML(repolink = "..."),
     modules = [EEGPlot],
     pages = [
-        "index.md"
+        "Home" => "index.md",
     ]
 )
 
