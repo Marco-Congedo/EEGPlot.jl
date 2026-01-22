@@ -1,19 +1,20 @@
 using Documenter
-
 using CairoMakie 
-# Tells Makie to use the Cairo (static) backend for all plots in the docs
+
+# Force static backend for headless documentation building
 CairoMakie.activate!()
 
-using Pkg
-Pkg.activate(@__DIR__)
-Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
-Pkg.instantiate()
 using EEGPlot 
 
 makedocs(
-    sitename = "EEGPlot",
-    authors="Marco Congedo, Tomas Ros",
-    format = Documenter.HTML(repolink = "..."),
+    sitename = "EEGPlot.jl",
+    authors = "Marco Congedo, Tomas Ros",
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        canonical = "https://Marco-Congedo.github.io/EEGPlot.jl",
+        edit_link = "master",  # Changed from "main" to "master"
+        repolink = "https://github.com/Marco-Congedo/EEGPlot.jl"
+    ),
     modules = [EEGPlot],
     pages = [
         "Home" => "index.md",
@@ -21,14 +22,7 @@ makedocs(
 )
 
 deploydocs(
-   repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
-   branch = "gh-pages",
-   # target = "build",
+    repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
+    devbranch = "master",   # Changed from "main" to "master"
+    push_preview = true     # Allows you to see the docs before merging the PR
 )
-
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
