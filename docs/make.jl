@@ -1,6 +1,10 @@
 using Documenter
-using Bonito
-using EEGPlot
+
+using Pkg
+Pkg.activate(@__DIR__)
+Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
+Pkg.instantiate()
+using EEGPlot 
 
 makedocs(
     sitename = "EEGPlot",
@@ -13,9 +17,8 @@ makedocs(
 )
 
 deploydocs(
-   repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
+   repo = "https://github.com/Marco-Congedo/EEGPlot.jl.git",
    branch = "gh-pages",
-   push_preview = true,
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
