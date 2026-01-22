@@ -17,8 +17,9 @@ makedocs(
 )
 
 deploydocs(
-   repo = "https://github.com/Marco-Congedo/EEGPlot.jl.git",
+   repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
    branch = "gh-pages",
+   # target = "build",
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.

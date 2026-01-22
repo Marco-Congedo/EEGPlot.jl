@@ -324,7 +324,7 @@ The following commands are available only in [interactive mode](@ref "Static and
 
 ## ✍️ About the authors
 
-Generative AI supervised by [Marco Congedo](https://sites.google.com/site/marcocongedo) and [Tomas Ros](https://www.tomasros.com/).
+[Marco Congedo](https://sites.google.com/site/marcocongedo), [Tomas Ros](https://www.tomasros.com/) and Generative AI.
 
 ***
 
