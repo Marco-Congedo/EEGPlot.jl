@@ -25,12 +25,6 @@ jobs:
           version: '1.11'
 
       - uses: julia-actions/cache@v2
-      
-      # --- ADD THIS SECTION TO INSTALL GRAPHICS LIBS ---
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1-mesa-glx libpreview-dev
 
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
@@ -41,6 +35,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: true
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-          GKSwstype: "100" # Useful for some plotting backends to stay headless
-        run: |
-          xvfb-run --auto-servernum julia --project=docs/ docs/make.jl
+        run: julia --project=docs/ docs/make.jl

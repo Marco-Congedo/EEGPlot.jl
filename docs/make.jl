@@ -1,5 +1,9 @@
 using Documenter
 
+using CairoMakie 
+# Tells Makie to use the Cairo (static) backend for all plots in the docs
+CairoMakie.activate!()
+
 using Pkg
 Pkg.activate(@__DIR__)
 Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
