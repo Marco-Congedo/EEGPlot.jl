@@ -7,14 +7,14 @@
 
 It can be used in two modes:
  - *STATIC*: mainly to create figures
- - *INTERACTIVE*: to inspect the data
+ - *INTERACTIVE*: to inspect the data.
 
 ![Animation](https://github.com/user-attachments/assets/4aa7dcca-4207-4a89-a764-a0d101f26f94)
 
 ## 🧩 Requirements
 
 - *julia* version ≥ 1.11,
-- either the *CairoMakie* (static plot) or *GLMakie*(interactive plot) backend for *Makie.jl*.
+- either the *CairoMakie* (static plot) or *GLMakie* (interactive plot) backend for *Makie.jl*.
 
 ---
 ## 📦 Installation
@@ -26,10 +26,6 @@ Execute the following command in julia's REPL:
 ```
 ---
 
-## —͟͟͞͞★ Quick Start
-
-
----
 ## ✍️ About the authors
 
 [Marco Congedo](https://sites.google.com/site/marcocongedo), [Tomas Ros](https://www.tomasros.com/) and Generative AI.
