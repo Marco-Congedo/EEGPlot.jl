@@ -66,7 +66,7 @@ See also [Examples](@ref)
 
 ### Static Plots
 
-```@example Static
+```@example Static; eval=false
 using EEGPlot, Eegle, CairoMakie
 
 # read example EEG data, sampling rate and sensor labels from Eegle
@@ -95,7 +95,7 @@ P = y u^T,
 ```
 - plot ``X`` and overlay ``P`` on the upper panel, ``y`` on the lower panel.
 
-```@example Multiple
+```@example Multiple; eval=false
 using EEGPlot, Eegle, LinearAlgebra, CairoMakie
 
 # read example EEG data, sampling rate and sensor labels from Eegle
@@ -153,7 +153,7 @@ For an example of plotting evoked potentials, we will consider the example P300 
 provided by `Eegle.jl`. Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
 for details on the ERP computations.
 
-```@example ERP
+```@example ERP; eval=false
 using EEGPlot, Eegle, CairoMakie
 CairoMakie.activate!()
 
