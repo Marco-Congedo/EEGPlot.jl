@@ -36,6 +36,8 @@ makedocs(
 if ci
     deploydocs(
         repo = "github.com/Marco-Congedo/EEGPlot.jl.git", 
+        branch = "gh-pages",
+        devbranch = "master",
         # Allow to see the docs before merging the PR. They will be cleaned up by an action
         push_preview = true     
     )
