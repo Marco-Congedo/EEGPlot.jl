@@ -11,14 +11,16 @@ using Documenter
 ENV["JULIA_MAKIE_BACKEND"] = "CairoMakie"
 ENV["GKSwstype"] = "100"          
 ENV["DISPLAY"] = ""               
-
 using CairoMakie
+CairoMakie.activate!(type = "png")
+
 using EEGPlot
 
 makedocs(
     sitename = " ", # hack to hide the name of the pkg in the upper-left corner of the index.md page
     authors = "Marco Congedo",          # (as the name is in the logo, we do not need it)
     modules = [EEGPlot],
+    doctest = false,
     pages = [
         "Home" => "index.md",
     ],
