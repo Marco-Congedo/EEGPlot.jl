@@ -1,7 +1,7 @@
 name = "EEGPlot"
 uuid = "7b5c3b30-84a4-4b07-a630-c21dc8c95940"
 authors = ["Marco Congedo, Tomas Ros, Generative AI"]
-version = "0.0.4"
+version = "0.0.5"
 
 [deps]
 GLFW = "f7f18e0c-5ee9-5ccd-a5bf-e8befd85ed98"
