@@ -1,0 +1,17 @@
+# Ignore generated documentation (Documenter.jl) 
+docs/build/* linguist-vendored 
+
+# Ignore HTML files (common in docs) 
+*.html linguist-vendored 
+
+# Ignore Jupyter notebooks if present (they often contain large JSON) 
+*.ipynb linguist-vendored 
+
+# Ignore compiled artifacts or binary outputs 
+*.so linguist-vendored 
+*.dll linguist-vendored 
+*.dylib linguist-vendored 
+
+# Ignore common build or cache folders 
+build/* linguist-vendored 
+deps/* linguist-vendored
