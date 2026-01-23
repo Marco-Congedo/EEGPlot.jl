@@ -1,6 +1,10 @@
 #push!(LOAD_PATH,"../src/")
 #push!(LOAD_PATH,"docs/src/")
 
+using Pkg
+Pkg.activate(@__DIR__)
+Pkg.instantiate()   
+
 using Documenter
 using CairoMakie   # headless backend
 using EEGPlot
