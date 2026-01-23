@@ -1,37 +1,52 @@
-name: CI
-
+name: Docs build and deploy
 on:
-  push:
+  pull_request:
     branches:
       - master
-    tags: '*'
-  pull_request:
+  push:
+    tags:
+      - '*'
+    branches:
+      - master
 
-permissions:
-  contents: read
-  pull-requests: read
-  statuses: write
-  pages: write
-  id-token: write
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1.11'
-
-      - uses: julia-actions/cache@v2
-
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-
-      - name: Build and deploy docs
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        persist-credentials: false
+    # NOTE: Python is necessary for the pre-rendering (minification) step
+    - name: Install python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.8'
+    - name: Install binary dependencies
+      run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
+    # NOTE: Here you can install dependencies such as matplotlib if you use
+    # packages such as PyPlot.
+    # - run: pip install matplotlib
+    - name: Install Julia
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: '1'
+    - uses: julia-actions/cache@v2
+    - name: Build and deploy docs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: >
+          cd docs;
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
+          julia --color=yes make.jl
+    - name: Upload site as artifact
+      uses: actions/upload-artifact@v6
+      with:
+        name: Docs build
+        path: ./docs/build
