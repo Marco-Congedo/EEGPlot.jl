@@ -14,7 +14,7 @@ It can be used in two modes:
 ## 🧩 Requirements
 
 - *julia* version ≥ 1.11,
-- the *CairoMakie* or *GLMakie* backend for *Makie.jl*, or both.
+- the *CairoMakie* and/or *GLMakie* backend for *Makie.jl*.
 
 ---
 ## 📦 Installation

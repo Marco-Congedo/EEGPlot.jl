@@ -1,21 +1,26 @@
+
+
+# allow being runned from within the /docs or /EEGPlots environment
+curdir = @__DIR__
+if lowercase(basename(@__DIR__)) == lowercase("EegPlot") 
+    curdir = joinpath(curdir, "docs")
+end
+
+using Pkg
+Pkg.activate(curdir)
+
 using Documenter
 using CairoMakie 
 
-# Force static backend for headless documentation building
-CairoMakie.activate!()
-
-using Documenter, DocumenterInterLinks
-
-using Pkg
-Pkg.activate(@__DIR__)
-Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
+Pkg.develop(PackageSpec(path=joinpath(curdir, "..")))  # Local EEGPlot
 Pkg.instantiate()
 using EEGPlot 
 
+ci = get(ENV, "CI", "false") == "true"
 
 makedocs(
-    sitename = "EEGPlot.jl",
-    authors = "Marco Congedo, Tomas Ros",
+    sitename = " ", # hack to hide the package name in the upper-left corner (it is in the logo already)
+    authors = "Marco Congedo",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
         edit_link = "master",  
@@ -27,8 +32,13 @@ makedocs(
     ]
 )
 
-deploydocs(
-    repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
-    devbranch = "master",   
-    push_preview = true     # Allow to see the docs before merging the PR
-)
+# deploy docs if run remotely by CI.yml, otherwise run LiveServer to visualize the docs
+if ci
+    deploydocs(
+        repo = "github.com/Marco-Congedo/EEGPlot.jl.git", 
+        # Allow to see the docs before merging the PR. They will be cleaned up by an action
+        push_preview = true     
+    )
+else 
+    include("local_run.jl")
+end

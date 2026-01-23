@@ -9,7 +9,7 @@ Two backends for `Makie.jl` are supported:
 - `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures;
 - `GLMakie.jl`, which produces an **INTERACTIVE** plot — for data inspection.
 
-!!! tip "Switching backend"
+!!! note "Switching backend"
     To switch from one backend to the other, use `GLMakie.activate!()` and `CairoMakie.activate!()`.
 
 ***
@@ -19,19 +19,23 @@ Two backends for `Makie.jl` are supported:
 **EEGPlot** can plot several datasets at the same time, employing two panels:
 
 - the *upper panel* showa an EEG/ERP dataset and can, optionally, overlay another one with the exact same dimension. 
-Using an interactive plot, it is simple to view only the first dataset, only the second, the first and the second or their difference;
+
+!!! tip "Dataset overlay"
+    Using an interactive plot, it is simple to view only the first dataset, only the second, the first and the second or their difference;
+
 - the *lower panel* can show a third dataset, which may have a different number of channels.
 
-When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
-This is very useful when inspecting a dataset along with spatial filter or source separation components, 
-a dataset decomposed in artifacts plus a cleaned component, etc.
+!!! tip "Panel Synchronization"
+    When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
+    This is very useful when inspecting a dataset along with spatial filters or source separation components, 
+    a dataset decomposed in artifacts plus a cleaned component, etc.
 
 ***
 
 ## 🧩 Requirements 
 
 - *julia* version ≥ 1.11,
-- the *CairoMakie* or *GLMakie* backend for *Makie.jl*, or both.
+- the *CairoMakie* and/or *GLMakie* backend for *Makie.jl*.
 
 ***
 
@@ -47,23 +51,23 @@ Execute the following commands in Julia's REPL:
 
 ## —͟͟͞͞★ Quick Start
 
-!!! note
-    All examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
-    and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these packages:
+All examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
+and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these packages:
 
-    ```julia
-    ]add Eegle, GLMakie, CairoMakie
-    ```
+```julia
+]add Eegle, GLMakie, CairoMakie
+```
+
 ***
 
-In this section, working examples that you can run about:
+#### Index of working examples
 
 - [Static Plots](@ref) 
-- [Multiple Datasets](@ref) 
-- [Interactive Plot](@ref) 
+- [Plotting Multiple Datasets](@ref) 
+- [Interactive Plots](@ref) 
 - [ERPs](@ref)
 
-See also [Examples](@ref)
+See also [Examples](@ref).
 
 ***
 
@@ -80,10 +84,11 @@ sensors = readSensors(EXAMPLE_Normative_1_sensors);
 eegplot(X, sr, sensors; fig_size=(814, 450)) 
 
 ```
+[▲ Index of working examples](@ref "Index of working examples")
 
 ***
 
-### Multiple Datasets
+### Plotting Multiple Datasets
 
 The following example illustrates the [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis). The workflow is :
 
@@ -112,9 +117,11 @@ eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1, fig_size=(814, 614))
 ```
 In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in green.
 
+[▲ Index of working examples](@ref "Index of working examples")
+
 ***
 
-### Interactive Plot
+### Interactive Plots
 
 It is obtained using the *GLMakie* backend instead. For example, to obtain an interactive plot
 of the PCA above, we would do
@@ -148,6 +155,8 @@ Note that in addition to static plots, interactive plots feature:
 !!! warning "Check the task bar"
     Interactive plots open as a separate window. The window may open minimized. 
 
+[▲ Index of working examples](@ref "Index of working examples")
+
 ***
 
 ### ERPs
@@ -167,19 +176,20 @@ o = readNY(EXAMPLE_P300_1, rate=4, upperLimit=1.2, bandPass=(1, 24)) # See Eegle
 M = mean(o; overlapping=true, weights=:a) # See Eegle.mean
 
 # target and non-target average ERP
-# Upsampled to obtain nicer plots
 T_ERP = M[findfirst(isequal("target"), o.clabels)]
 NT_ERP = M[findfirst(isequal("nontarget"), o.clabels)]
 
 eegplot(T_ERP, o.sr, o.sensors; 
-        fig_size=(812, 450),
-        overlay=NT_ERP, 
+        fig_size = (812, 450),
+        overlay = NT_ERP, 
         Y_labels = o.sensors,
-        win_length=o.sr,
-        px_per_sec=720,
-        init_scale=0.7,
+        win_length = o.wl, # trial length in samples
+        px_per_sec = 720,
+        init_scale = 0.7,
         X_title = "EPR target (grey) and nontarget (red)")
 ```
+
+[▲ Index of working examples](@ref "Index of working examples")
 
 ***
 
@@ -193,8 +203,8 @@ function eegplot(X, sr, X_labels; args...)
 
 ### Arguments
 
-1. the dataset ``X`` for the upper panel (Matrix of Real)
-2. the sampling rate of ``X`` (Int)
+1. a matrix ``X \in \mathbb{R}^{T \times N_X}`` for the upper panel, where ``T`` and ``N_X`` are the number of samples and channels,
+2. the sampling rate of dataset ``X`` (Int),
 3. the labels of ``X`` (Vector of String), which can be omitted.
 
 ### Optional Keyword Arguments (kwargs)
@@ -204,10 +214,10 @@ function eegplot(X, sr, X_labels; args...)
 | `fig_size`        | 2-tuple of Int    | size of the plot          | (1400, 800)       |
 | `X_title`         | String            | title of the upper panel  | nothing           |
 | `X_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of ``X`` dataset | :grey24 | 
-| `overlay`         | Matrix of Real    | ``overlay`` dataset       | nothing           |
+| `overlay`         | Matrix ``\in \mathbb{R}^{T \times N_X}``  | ``overlay`` dataset       | nothing           |
 | `overlay_color`   | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the ``overlay`` dataset| :firebrick |
 | `diff_color`      | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the difference ``X - overlay``| :cornflower |
-| `Y`               | Matrix of Real    | lower panel dataset       | nothing           |
+| `Y`               | Matrix ``\in \mathbb{R}^{T \times N_Y}``   | lower panel dataset       | nothing           |
 | `Y_labels`        | Vector of String  | lower panel labels        | nothing           |
 | `Y_title`         | String            | title of the lower panel  | nothing           |
 | `Y_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of lower panel dataset| :darkgreen|
@@ -216,7 +226,7 @@ function eegplot(X, sr, X_labels; args...)
 | `i_panel_font`    | String            | help panel font           | "DejaVu Sans"     |
 | `i_panel_font_size`| Int ≥ 4          | help panel font size     | 14                |
 | `start_pos`       | Int ≥ 1           | first sample to show      | 1 (first sample)  |
-| `win_length`      | Int ≥ 0, 0 = Auto | number of samples to show | 0                 |
+| `win_length`      | Int ≥ 0;  0 = Auto| number of samples to show | 0                 |
 | `px_per_sec`      | Int ≥ 100         | number of pixels to cover 1s | 200            |
 | `init_scale`      | Real > 0          | initial scaling           | 0.61803...        |
 | `scale_change`    | Real > 0          | speed of scale change using [Interactions](@ref) | 0.1   |
@@ -226,56 +236,68 @@ function eegplot(X, sr, X_labels; args...)
 
 ## 💡 Examples
 
-In these examples it is assumed the existence of some data ``X`` with sampling rate `sr` and labels `sensors`.
+In these examples it is assumed the existence of data ``X\in \mathbb{R}^{T \times N_X}`` with sampling rate `sr` and labels `sensors`.
 
 ```julia
 using EEGPlot, CairoMakie # or GLMakie for interactive plots
 
-# plot with default settings
+# Plot with default settings
 eegplot(X, sr, sensors)
 
-# save a figure with large size and high quality (ppi)
-# for this CairoMakie should be used
+# Save a figure with large size and high quality (ppi)
+# (for saving figures CairoMakie is preferable)
 fig = eegplot(X, sr, sensors; 
-            fig_size = (3000, 1000), image_quality = 4)
+            fig_size = (3000, 1000), 
+            image_quality = 4)
 save("figure.png", fig)
 
-# plot without providing labels for X
+# Plot without providing labels for X
 eegplot(X, sr)
 
-# two panels; Y must have the same # of samples as X
-eegplot(X, sr, sensors; Y=X)
+# Two panels; Y must have the same # of samples as X
+eegplot(X, sr, sensors; 
+        Y = X)
 
-# overlay; must have the same # of samples and of channels as X
-eegplot(X, sr, sensors; overlay=X)
+# Overlay; must have the same # of samples and of channels as X
+eegplot(X, sr, sensors; 
+        overlay = X)
 
-# both overlay and two panels
-eegplot(X, sr, sensors; overlay=X, Y=X)
+# Both overlay and two panels
+eegplot(X, sr, sensors; 
+        overlay = X, 
+        Y = X)
 
-# change pixels per second (time-constant)
-eegplot(X, sr, sensors; px_per_sec = 300)
+# Change pixels per second (time-constant)
+eegplot(X, sr, sensors; 
+        px_per_sec = 300)
 
-# notice that the data is plotted with the same time-constant
+# Notice that the data is plotted with the same time-constant
 # regardless the sampling rate. For example, doubling the sr
 using Eegle # for `resample`
-eegplot(resample(X, sr, 2), 256, sensors; px_per_sec = 300)
+eegplot(resample(X, sr, 2), 256, sensors; 
+        px_per_sec = 300)
 
-# change titles and colors
-eegplot(X, sr, sensors; Y=X, 
-    X_title="This the title for the upper panel",
-    X_color=:blue,
-    Y_title="This the title for the lower panel",
-    Y_color=:darkviolet,
-    )
+# Change titles and colors
+eegplot(X, sr, sensors; 
+        Y = X, 
+        X_title = "This the title for the upper panel",
+        X_color = :blue,
+        Y_title = "This the title for the lower panel",
+        Y_color = :darkviolet,
+        )
 
-# start plotting from second 2    
-heegplot(X, sr, sensors; start_pos=sr*2)
+# Start plotting from second 2    
+heegplot(X, sr, sensors; 
+        start_pos = sr*2)
 
-# start plotting from an arbitrary sample (345)
-eegplot(X, sr, sensors; start_pos=345)
+# Start plotting from an arbitrary sample (345)
+eegplot(X, sr, sensors; 
+        start_pos = 345)
 
-# plot from sample 345 to sample 345+sr*2 (2s)
-eegplot(X, sr, sensors; start_pos=129, win_length = sr*4)
+# Plot from sample 345 to sample 345+sr*2 (2s)
+eegplot(X, sr, sensors; 
+        start_pos = 129, 
+        win_length = sr*4)
 
 ```
 
@@ -285,7 +307,7 @@ eegplot(X, sr, sensors; start_pos=129, win_length = sr*4)
 
 The following commands are available only in [interactive mode](@ref "Static and Interactive mode").
 
-!!! note "Set Focus"
+!!! warning "Set Focus"
     If the plot does not respond to the controls, set the focus on the plot by clicking anywhere on it.
 
 ### ⌨ Keyboard controls
