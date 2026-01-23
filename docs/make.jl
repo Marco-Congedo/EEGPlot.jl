@@ -1,16 +1,7 @@
-# docs/make.jl
-# Works whether run from /docs or /EEGPlot
-curdir = @__DIR__
-if lowercase(basename(@__DIR__)) == lowercase("EEGPlot")
-    curdir = joinpath(curdir, "docs")
-end
-
 using Pkg
-Pkg.activate(curdir)
-Pkg.instantiate()                # install dependencies
-
-# Use local EEGPlot
-Pkg.develop(path=joinpath(curdir, ".."))
+Pkg.activate(@__DIR__)
+Pkg.develop(path=joinpath(@__DIR__, "..")) # local EEGPlot
+Pkg.instantiate()                         
 
 using Documenter
 using CairoMakie   # headless backend
