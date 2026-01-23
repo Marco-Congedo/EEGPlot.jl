@@ -8,8 +8,9 @@ on:
   pull_request:
 
 permissions:
+  actions: write
   contents: write
-  pull-requests: read
+  pull-requests: write  # Changed from read to write for PR comments
   statuses: write
   pages: write
   id-token: write
@@ -30,9 +31,9 @@ jobs:
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
       - name: Build and deploy docs
-        if: github.event_name != 'pull_request'
+        # The "if" line was removed so this runs on both master and PRs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI: true
+          CI: "true"
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
         run: julia --project=docs/ docs/make.jl
