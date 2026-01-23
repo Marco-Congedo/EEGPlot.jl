@@ -4,7 +4,6 @@ using Makie
 using GLFW
 using Statistics
 using ImageClipboard 
-using PrecompileSignatures: @precompile_signatures
 
 # colors for printing messages
 const titleFont     = "\x1b[38;5;71m"
@@ -114,10 +113,22 @@ function eegplot(
     # ----------------------
     # Screen & Scaling Logic
     # ----------------------
-    monitor = GLFW.GetPrimaryMonitor()
-    vidmode = GLFW.GetVideoMode(monitor)
-    screen_w = vidmode.width
-    
+
+    local screen_w = 1920 # Default
+
+    # Skip monitor detection if we are in a headless/CI environment
+    if get(ENV, "JULIA_PLOT_HEADLESS", "false") == "false"
+        try
+            monitor = GLFW.GetPrimaryMonitor()
+            if monitor != nothing && monitor.handle != C_NULL
+                vidmode = GLFW.GetVideoMode(monitor)
+                screen_w = vidmode.width
+            end
+        catch
+            # Fallback already set to 1920
+        end
+    end
+
     is_fixed = win_length > 0
     init_time_window = is_fixed ? (win_length / sr) : (0.9 * screen_w / px_per_sec)
 
@@ -582,8 +593,5 @@ function eegplot(
     println(defaultFont, "Done ")
     return fig
 end
-
-# Generate and run `precompile` directives.
-@precompile_signatures(EEGPlot)
 
 end # module

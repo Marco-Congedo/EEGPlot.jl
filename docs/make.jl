@@ -1,29 +1,28 @@
-using Documenter
+#push!(LOAD_PATH,"../src/")
+#push!(LOAD_PATH,"docs/src/")
 
 using Pkg
 Pkg.activate(@__DIR__)
-Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
-Pkg.instantiate()
-using EEGPlot 
+Pkg.instantiate()   
+
+using Documenter
+using CairoMakie   # headless backend
+using EEGPlot
 
 makedocs(
-    sitename = "EEGPlot",
-    authors="Marco Congedo, Tomas Ros",
-    format = Documenter.HTML(repolink = "..."),
+    sitename = " ",  # hide package name in upper-left corner of page index.md
+    authors = "Marco Congedo",
     modules = [EEGPlot],
     pages = [
         "Home" => "index.md",
-    ]
+    ],
 )
 
-deploydocs(
-   repo = "https://github.com/Marco-Congedo/EEGPlot.jl.git",
-   branch = "gh-pages",
-)
-
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
+if get(ENV, "CI", "false") == "true"
+    deploydocs(
+        repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
+        push_preview = true,  # allows preview for PRs
+    )
+else
+    include("local_run.jl")  # optional local run
+end
