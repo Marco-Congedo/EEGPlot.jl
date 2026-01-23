@@ -116,7 +116,7 @@ function eegplot(
     # ----------------------
     local screen_w = 1920 # Default fallback for headless servers
     
-    # Only attempt GLFW calls if we are actually using GLMakie
+    # Only attempt GLFW calls if we are actually using GLMakie 
     if string(Makie.current_backend()) == "GLMakie"
         try
             monitor = GLFW.GetPrimaryMonitor()

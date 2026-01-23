@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags: '*'
+  pull_request:
+
+permissions:
+  actions: write
+  contents: write
+  pull-requests: write
+  statuses: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.11'
+
+      - uses: julia-actions/cache@v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          # Install xvfb for virtual display and modern GL libraries for Ubuntu 24.04
+          sudo apt-get install -y xvfb libgl1 libegl1 libglfw3
+          
+      - name: Install Julia dependencies
+        # We must use xvfb-run here because Julia precompiles EEGPlot during 'instantiate'
+        # and your module's GLFW calls require a display to precompile successfully.
+        run: |
+          xvfb-run --auto-servernum julia --project=docs/ -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.instantiate()'
+
+      - name: Build and deploy docs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
+        # xvfb-run provides the virtual monitor for the actual documentation generation
+        run: xvfb-run --auto-servernum julia --project=docs/ docs/make.jl
