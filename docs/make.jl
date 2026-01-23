@@ -1,12 +1,12 @@
-push!(LOAD_PATH,"../src/")
-push!(LOAD_PATH,"docs/src/")
+#push!(LOAD_PATH,"../src/")
+#push!(LOAD_PATH,"docs/src/")
 
 using Documenter
 using CairoMakie   # headless backend
 using EEGPlot
 
 makedocs(
-    sitename = " ",  # hide package name in corner
+    sitename = " ",  # hide package name in upper-left corner of page index.md
     authors = "Marco Congedo",
     modules = [EEGPlot],
     pages = [
