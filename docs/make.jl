@@ -6,11 +6,14 @@ Pkg.develop(path=joinpath(@__DIR__, "..")) # local EEGPlot
 Pkg.instantiate()                         
 
 using Documenter
-using CairoMakie
-using EEGPlot
 
 # Set plotting to headless mode to prevent hangs
-ENV["GKSwstype"] = "100"
+ENV["JULIA_MAKIE_BACKEND"] = "CairoMakie"
+ENV["GKSwstype"] = "100"          
+ENV["DISPLAY"] = ""               
+
+using CairoMakie
+using EEGPlot
 
 makedocs(
     sitename = " ", # hack to hide the name of the pkg in the upper-left corner of the index.md page
