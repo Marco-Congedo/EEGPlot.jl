@@ -1,38 +1,32 @@
 
-
 # allow being runned from within the /docs or /EEGPlots environment
+# allow being run from within /docs or /EEGPlot
 curdir = @__DIR__
-if lowercase(basename(@__DIR__)) == lowercase("EegPlot") 
+if lowercase(basename(@__DIR__)) == lowercase("EEGPlot")
     curdir = joinpath(curdir, "docs")
 end
 
 using Pkg
 Pkg.activate(curdir)
 
-using Documenter
-using CairoMakie 
+Pkg.develop(path=joinpath(curdir, ".."))  # local EEGPlot
+Pkg.instantiate()                         
 
-Pkg.develop(PackageSpec(path=joinpath(curdir, "..")))  # Local EEGPlot
-Pkg.instantiate()
-using EEGPlot 
+using Documenter
+using CairoMakie
+using EEGPlot
 
 ci = get(ENV, "CI", "false") == "true"
 
 makedocs(
-    sitename = " ", # hack to hide the package name in the upper-left corner (it is in the logo already)
-    authors = "Marco Congedo",
-    format = Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true",
-        edit_link = "master",  
-        repolink = "..."
-    ),
+    sitename = " ", # hack to hide the name of the pkg in the upper-left corner of the index.md page
+    authors = "Marco Congedo",          # (as the name is in the logo, we do not need it)
     modules = [EEGPlot],
     pages = [
         "Home" => "index.md",
-    ]
+    ],
 )
 
-# deploy docs if run remotely by CI.yml, otherwise run LiveServer to visualize the docs
 if ci
     deploydocs(
         repo = "github.com/Marco-Congedo/EEGPlot.jl.git", 
@@ -42,3 +36,4 @@ if ci
 else 
     include("local_run.jl")
 end
+
