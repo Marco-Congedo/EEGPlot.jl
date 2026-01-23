@@ -8,9 +8,8 @@ on:
   pull_request:
 
 permissions:
-  actions: write
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
   statuses: write
   pages: write
   id-token: write
@@ -18,7 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30 # Prevents the job from hanging forever if a plot fails
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -28,20 +27,12 @@ jobs:
 
       - uses: julia-actions/cache@v2
 
-      - name: Install System Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb libgl1 libegl1 libglfw3
+      - name: Install dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
-      - name: Install Julia Dependencies
-        run: |
-          xvfb-run --auto-servernum julia --project=docs/ -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
-
-      - name: Build and Deploy Docs
+      - name: Build and deploy docs
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CI: "true"
-        run: xvfb-run --auto-servernum julia --project=docs/ docs/make.jl
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=docs/ docs/make.jl

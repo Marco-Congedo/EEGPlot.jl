@@ -4,16 +4,22 @@ using CairoMakie
 # Force static backend for headless documentation building
 CairoMakie.activate!()
 
+using Documenter, DocumenterInterLinks
+
+using Pkg
+Pkg.activate(@__DIR__)
+Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
+Pkg.instantiate()
 using EEGPlot 
+
 
 makedocs(
     sitename = "EEGPlot.jl",
     authors = "Marco Congedo, Tomas Ros",
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-        canonical = "https://Marco-Congedo.github.io/EEGPlot.jl",
-        edit_link = "master",  # Changed from "main" to "master"
-        repolink = "https://github.com/Marco-Congedo/EEGPlot.jl"
+        edit_link = "master",  
+        repolink = "..."
     ),
     modules = [EEGPlot],
     pages = [
@@ -23,6 +29,6 @@ makedocs(
 
 deploydocs(
     repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
-    devbranch = "master",   # Changed from "main" to "master"
-    push_preview = true     # Allows you to see the docs before merging the PR
+    devbranch = "master",   
+    push_preview = true     # Allow to see the docs before merging the PR
 )

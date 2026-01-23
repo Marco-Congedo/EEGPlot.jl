@@ -3,20 +3,23 @@
 push!(LOAD_PATH,"../src/")
 push!(LOAD_PATH,"docs/src/")
 
-using Documenter, DocumenterInterLinks, DocumenterTools, Revise
-
 using Pkg
 Pkg.activate(@__DIR__)
 Pkg.develop(PackageSpec(path=joinpath(@__DIR__, "..")))  # Local EEGPlot
 Pkg.instantiate()
 using EEGPlot 
 
+using Documenter, DocumenterInterLinks
+
 makedocs(
-    sitename = " ", # ← space: hack to hide the name in the upper-left corner of the index.md page
-    authors="Marco Congedo",
-    format = Documenter.HTML(repolink = "..."),
+    sitename = "EEGPlot.jl",
+    authors = "Marco Congedo, Tomas Ros",
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        edit_link = "master",  
+        repolink = "..."
+    ),
     modules = [EEGPlot],
-    remotes = nothing, # ELIMINATE for deploying
     pages = [
         "Home" => "index.md",
     ]

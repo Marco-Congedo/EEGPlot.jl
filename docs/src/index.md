@@ -1,6 +1,6 @@
 # EEGPlot.jl
 
-A *julia* package to plot electroencephalographic recording (EEG) and event-related potentials (ERP). It is based on [Makie.jl](https://docs.makie.org/).
+A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroencephalographic recording (EEG) and event-related potentials (ERP). 
 
 ## ⚙️ Static and Interactive mode
 
@@ -18,10 +18,13 @@ Two backends for `Makie.jl` are supported:
 
 **EEGPlot** can plot several datasets at the same time, employing two panels:
 
-- the *upper panel* can show the dataset ``X \in \mathbb{R}^{T \times N_X}``, where ``T`` is the number of time samples and ``N_X`` the number of channels, overlay another dataset ``\in \mathbb{R}^{T \times N_X}``, and show the difference between the two;
-- the *lower panel* can show a third dataset, ``Y \in \mathbb{R}^{T \times N_Y}``, where ``N_Y`` can be different from ``N_X``.
+- the *upper panel* showa an EEG/ERP dataset and can, optionally, overlay another one with the exact same dimension. 
+Using an interactive plot, it is simple to view only the first dataset, only the second, the first and the second or their difference;
+- the *lower panel* can show a third dataset, which may have a different number of channels.
 
 When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
+This is very useful when inspecting a dataset along with spatial filter or source separation components, 
+a dataset decomposed in artifacts plus a cleaned component, etc.
 
 ***
 
