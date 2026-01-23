@@ -9,5 +9,3 @@ DocumenterTools = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
 EEGPlot = "7b5c3b30-84a4-4b07-a630-c21dc8c95940"
 Eegle = "1260424e-cd79-4b74-a0ea-47c69c296663"
 
-[sources]
-EEGPlot = {path = "C:\\Users\\Marco\\Documents\\code\\julia\\EEGPlot\\docs\\.."}
