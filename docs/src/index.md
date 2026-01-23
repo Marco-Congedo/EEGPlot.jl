@@ -34,7 +34,8 @@ Two backends for `Makie.jl` are supported:
 
 ## 🧩 Requirements 
 
-- *julia* version ≥ 1.11,
+- *julia* version ≥ 1.10,
+- *Makie* version ≥ 0.24.8,
 - the *CairoMakie* and/or *GLMakie* backend for *Makie.jl*.
 
 ***

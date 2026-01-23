@@ -1,22 +1,15 @@
-
-# allow being runned from within the /docs or /EEGPlots environment
-# allow being run from within /docs or /EEGPlot
-curdir = @__DIR__
-if lowercase(basename(@__DIR__)) == lowercase("EEGPlot")
-    curdir = joinpath(curdir, "docs")
-end
+# Locally, run from within the /docs environment
 
 using Pkg
-Pkg.activate(curdir)
-
-Pkg.develop(path=joinpath(curdir, ".."))  # local EEGPlot
+Pkg.activate(@__DIR__)
 Pkg.instantiate()                         
 
 using Documenter
 using CairoMakie
 using EEGPlot
 
-ci = get(ENV, "CI", "false") == "true"
+# Set plotting to headless mode to prevent hangs
+ENV["GKSwstype"] = "100"
 
 makedocs(
     sitename = " ", # hack to hide the name of the pkg in the upper-left corner of the index.md page
@@ -27,13 +20,13 @@ makedocs(
     ],
 )
 
-if ci
+if get(ENV, "CI", "false") # true if is run by CI
     deploydocs(
         repo = "github.com/Marco-Congedo/EEGPlot.jl.git", 
         # Allow to see the docs before merging the PR. They will be cleaned up by an action
         push_preview = true     
     )
 else 
-    include("local_run.jl")
+    include("local_run.jl") # run docs locally using LiveServer.jl
 end
 
