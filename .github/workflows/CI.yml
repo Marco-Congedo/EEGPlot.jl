@@ -1,38 +1,49 @@
 name: CI
-
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
     tags: '*'
-  pull_request:
-
-permissions:
-  contents: read
-  pull-requests: read
-  statuses: write
-  pages: write
-  id-token: write
-
 jobs:
-  build:
+  test:
+    name: Julia ${{ matrix.version }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    env:
+      JULIA_PKG_SERVER: ""
+      JULIA_NUM_THREADS: "4"
+      DISPLAY: ":99"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+      MESA_GL_VERSION_OVERRIDE: "4.5"
+      MESA_GLSL_VERSION_OVERRIDE: "450"
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1.10'
+          - '1'
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: julia-actions/setup-julia@v2
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y xvfb mesa-utils mesa-vulkan-drivers dbus
+      - name: Start Virtual Display
+        run: |
+          Xvfb :99 -screen 0 1920x1080x24 &
+          eval $(dbus-launch)
+          export DBUS_SESSION_BUS_ADDRESS
+          export DBUS_SESSION_BUS_PID
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
         with:
-          version: '1.11'
-
-      - uses: julia-actions/cache@v2
-
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-
-      - name: Build and deploy docs
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+          version: ${{ matrix.version }}
+          arch: x64
+      - uses: julia-actions/cache@v1
+      - name: Run headless test
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            julia --project=@. -e "using Pkg; Pkg.test(coverage=true)"
