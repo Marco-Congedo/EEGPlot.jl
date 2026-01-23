@@ -3,6 +3,7 @@
 
 using Pkg
 Pkg.activate(@__DIR__)
+Pkg.develop(path=joinpath(@__DIR__, ".."))  # local EEGPlot
 Pkg.instantiate()   
 
 using Documenter
@@ -12,7 +13,7 @@ using EEGPlot
 CI = get(ENV, "CI", "false") == "true"
 
 makedocs(
-    #sitename = " ",  # hide package name in upper-left corner of page index.md
+    sitename = " ",  # hide package name in upper-left corner of page index.md
     authors = "Marco Congedo",
     modules = [EEGPlot],
     format = Documenter.HTML(;  prettyurls = CI,
