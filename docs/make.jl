@@ -1,13 +1,9 @@
-using Pkg
-Pkg.activate(@__DIR__)
-Pkg.develop(path=joinpath(@__DIR__, "..")) # local EEGPlot
-Pkg.instantiate()                         
+push!(LOAD_PATH,"../src/")
+push!(LOAD_PATH,"docs/src/")
 
 using Documenter
 using CairoMakie   # headless backend
 using EEGPlot
-
-ci = get(ENV, "CI", "false") == "true"
 
 makedocs(
     sitename = " ",  # hide package name in corner
@@ -18,7 +14,7 @@ makedocs(
     ],
 )
 
-if ci
+if get(ENV, "CI", "false") == "true"
     deploydocs(
         repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
         push_preview = true,  # allows preview for PRs
