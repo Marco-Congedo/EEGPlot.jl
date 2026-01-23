@@ -29,14 +29,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Install the virtual display server and GL libraries
           sudo apt-get update
-          sudo apt-get install -y xvfb libgl1-mesa-glx libglfw3
+          # Updated for Ubuntu 24.04 compatibility (Noble Tarsier)
+          sudo apt-get install -y xvfb libgl1 libegl1 libglfw3
           julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
       - name: Build and deploy docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: "true"
-          # DOCUMENTER_KEY only needed if using SSH deploy, GITHUB_TOKEN is usually enough
+        # xvfb-run provides the virtual X11 display for GLFW
         run: xvfb-run --auto-servernum julia --project=docs/ docs/make.jl
