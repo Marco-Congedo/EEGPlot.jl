@@ -1,38 +1,37 @@
-# Locally, run from within the /docs environment
+# docs/make.jl
+# Works whether run from /docs or /EEGPlot
+curdir = @__DIR__
+if lowercase(basename(@__DIR__)) == lowercase("EEGPlot")
+    curdir = joinpath(curdir, "docs")
+end
 
 using Pkg
-Pkg.activate(@__DIR__)
-Pkg.develop(path=joinpath(@__DIR__, "..")) # local EEGPlot
-Pkg.instantiate()                         
+Pkg.activate(curdir)
+Pkg.instantiate()                # install dependencies
+
+# Use local EEGPlot
+Pkg.develop(path=joinpath(curdir, ".."))
 
 using Documenter
-
-# Set plotting to headless mode to prevent hangs
-ENV["JULIA_MAKIE_BACKEND"] = "CairoMakie"
-ENV["GKSwstype"] = "100"          
-ENV["DISPLAY"] = ""               
-using CairoMakie
-CairoMakie.activate!(type = "png")
-
+using CairoMakie   # headless backend
 using EEGPlot
 
+ci = get(ENV, "CI", "false") == "true"
+
 makedocs(
-    sitename = " ", # hack to hide the name of the pkg in the upper-left corner of the index.md page
-    authors = "Marco Congedo",          # (as the name is in the logo, we do not need it)
+    sitename = " ",  # hide package name in corner
+    authors = "Marco Congedo",
     modules = [EEGPlot],
-    doctest = false,
     pages = [
         "Home" => "index.md",
     ],
 )
 
-if get(ENV, "CI", "false") # true if is run by CI
+if ci
     deploydocs(
-        repo = "github.com/Marco-Congedo/EEGPlot.jl.git", 
-        # Allow to see the docs before merging the PR. They will be cleaned up by an action
-        push_preview = true     
+        repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
+        push_preview = true,  # allows preview for PRs
     )
-else 
-    include("local_run.jl") # run docs locally using LiveServer.jl
+else
+    include("local_run.jl")  # optional local run
 end
-
