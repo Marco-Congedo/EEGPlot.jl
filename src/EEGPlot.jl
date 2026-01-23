@@ -111,12 +111,24 @@ function eegplot(
     i_panel_font_size ≥ 4 || throw(ArgumentError("📉 argument `i_panel_font_size` must be at least 4"))
     string(Makie.current_backend()) ∉ ("CairoMakie", "GLMakie") && throw(ErrorException("📉 eegplot supports only the CairoMakie and GLMakie backends for Makie"))
 
-    # ----------------------
+# ----------------------
     # Screen & Scaling Logic
     # ----------------------
-    monitor = GLFW.GetPrimaryMonitor()
-    vidmode = GLFW.GetVideoMode(monitor)
-    screen_w = vidmode.width
+    local screen_w = 1920 # Default fallback for headless servers
+    
+    # Only attempt GLFW calls if we are actually using GLMakie
+    if string(Makie.current_backend()) == "GLMakie"
+        try
+            monitor = GLFW.GetPrimaryMonitor()
+            if monitor != nothing && monitor.handle != C_NULL
+                vidmode = GLFW.GetVideoMode(monitor)
+                screen_w = vidmode.width
+            end
+        catch e
+            # If GLFW fails (e.g., on a server), we just stick with the fallback
+            @debug "GLFW monitor detection failed, using default width: $e"
+        end
+    end
     
     is_fixed = win_length > 0
     init_time_window = is_fixed ? (win_length / sr) : (0.9 * screen_w / px_per_sec)

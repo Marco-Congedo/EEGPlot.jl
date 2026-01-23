@@ -10,7 +10,7 @@ on:
 permissions:
   actions: write
   contents: write
-  pull-requests: write  # Changed from read to write for PR comments
+  pull-requests: write
   statuses: write
   pages: write
   id-token: write
@@ -28,12 +28,15 @@ jobs:
       - uses: julia-actions/cache@v2
 
       - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+        run: |
+          # Install the virtual display server and GL libraries
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-glx libglfw3
+          julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
       - name: Build and deploy docs
-        # The "if" line was removed so this runs on both master and PRs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: "true"
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+          # DOCUMENTER_KEY only needed if using SSH deploy, GITHUB_TOKEN is usually enough
+        run: xvfb-run --auto-servernum julia --project=docs/ docs/make.jl
