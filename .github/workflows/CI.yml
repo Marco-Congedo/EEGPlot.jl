@@ -25,25 +25,9 @@ jobs:
           - '1.10'
           - '1'
     steps:
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y xvfb mesa-utils mesa-vulkan-drivers dbus
-      - name: Start Virtual Display
-        run: |
-          Xvfb :99 -screen 0 1920x1080x24 &
-          eval $(dbus-launch)
-          export DBUS_SESSION_BUS_ADDRESS
-          export DBUS_SESSION_BUS_PID
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
-        with:
-          version: ${{ matrix.version }}
-          arch: x64
-      - uses: julia-actions/cache@v1
-      - name: Run headless test
-        uses: GabrielBB/xvfb-action@v1
+      - uses: actions/checkout@v6
+
+      - uses: julia-actions/setup-julia@v2
         with:
           run: |
             julia --project=@. -e "using Pkg; Pkg.test(coverage=true)"
