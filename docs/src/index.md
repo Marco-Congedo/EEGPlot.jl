@@ -322,13 +322,13 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'D'*: show the difference ``X - overlay`` (*ibidem*)
 - *Shift + ↑/↓*: scale ``X`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 
-*▾ Lower Panel*
+*▾ Lower Panel* (if `Y` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
 
-- *'Y'*: toggle Y data (lower panel) visibility (if `Y` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
+- *'Y'*: toggle Y data (lower panel) visibility 
 - *Ctrl + ↑/↓*: scale ``Y`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *Slider*: resize the lower panel
 
-*⌖ Navigation*
+*⌖ Navigation* (apply to all visible panels)
 - *←/→*: scroll backward and forward the dataset(s) 
 - *↑/↓*: scale up and down the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *Page Up*: move to begin of dataset(s)
@@ -339,7 +339,7 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'M'*: toggle the status of the plot window (maximized/normal)
 - *'Esc'*: restore the normal status if the window is maximized
 - *'S'*: save the plot in the current directory as a *.png* file (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
-- *'C'*: copy the plot to the clipboard (*ibidem*)
+- *'C'*: copy the plot to the clipboard
 - *'H'*: toggle the visibility of the help panel
 
 ### ⊕ Mouse Controls
