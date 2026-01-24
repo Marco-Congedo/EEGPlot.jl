@@ -38,6 +38,7 @@ Execute the following command in julia's REPL:
 Please contact the authors if you are interested in contributing.
 
 ---
+
 ## 🎓 Documentation   
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)
