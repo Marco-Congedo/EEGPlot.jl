@@ -1,6 +1,6 @@
 # EEGPlot.jl
 
-A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroencephalographic recording (EEG) and event-related potentials (ERP). 
+A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroencephalography (EEG) and event-related potentials (ERP). 
 
 ## ⚙️ Static and Interactive mode
 
@@ -18,10 +18,10 @@ Two backends for `Makie.jl` are supported:
 
 **EEGPlot** can plot several datasets at the same time, employing two panels:
 
-- the *upper panel* showa an EEG/ERP dataset and can, optionally, overlay another one with the exact same dimension. 
+- the *upper panel* shows an EEG/ERP dataset and can overlay another one with the exact same dimension. 
 
 !!! tip "Dataset overlay"
-    Using an interactive plot, it is simple to view only the first dataset, only the second, the first and the second or their difference;
+    Using an interactive plot, it is simple to view only the first dataset, only the second, both or their difference;
 
 - the *lower panel* can show yet another dataset, which may have a different number of channels.
 
@@ -52,7 +52,7 @@ Execute the following commands in Julia's REPL:
 
 ## —͟͟͞͞★ Quick Start
 
-The following examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
+The following examples make use of [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
 and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these packages:
 
 ```julia
@@ -74,7 +74,7 @@ See also [Examples](@ref).
 
 ### Static Plots
 
-```@example Static; eval=false
+```@example Static; 
 using EEGPlot, Eegle, CairoMakie
 
 # read example EEG data, sampling rate and sensor labels from Eegle
@@ -104,7 +104,7 @@ P = y u^T,
 ```
 - plot ``X`` and overlay ``P`` on the upper panel, ``y`` on the lower panel.
 
-```@example Multiple; eval=false
+```@example Multiple; 
 using EEGPlot, Eegle, LinearAlgebra, CairoMakie
 
 # read example EEG data, sampling rate and sensor labels from Eegle
@@ -125,7 +125,7 @@ In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in gr
 ### Interactive Plots
 
 It is obtained using the *GLMakie* backend instead. The syntax of `eegPlot` does not change ta all. For example, to obtain an interactive plot
-of the PCA above, we would do
+of the PCA above, we would do:
 
 ```julia
 using GLMakie
@@ -144,14 +144,14 @@ P = y * u'
 # The syntax is exactly the same as above
 eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1)
 ```
-Such plots allows [interactions](@ref "Interactions"). It looks like this:
+Such plots allows [interactions](@ref "Interactions") and look like this:
 
 ![](assets/fig2.png)
 
 Note that in addition to static plots, interactive plots feature:
 - a *central slider* to resize the upper and lower panels,
 - a *slider at the bottom of the window* to scroll the data,
-- an *help panel* summarizing the interaction controls. 
+- an *help panel* summarizing the interaction controls (visible by default). 
 
 !!! warning "Check the task bar"
     Interactive plots open as a separate window. The window may open minimized. 
@@ -167,7 +167,7 @@ provided by `Eegle.jl`. In P300 experiments, we are interested in two classes of
 Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
 for details on the ERP computations.
 
-```@example ERP; eval=false
+```@example ERP; 
 using EEGPlot, Eegle, CairoMakie
 CairoMakie.activate!()
 
@@ -190,6 +190,8 @@ eegplot(T_ERP, o.sr, o.sensors;
         init_scale = 0.7,
         X_title = "EPR target (grey) and nontarget (red)")
 ```
+
+For plotting ERPs, see also [UnfoldMakie](https://github.com/unfoldtoolbox/UnfoldMakie.jl).
 
 [▲ Index of working examples](@ref "Index of working examples")
 
@@ -238,7 +240,7 @@ function eegplot(X, sr, X_labels; args...)
 
 ## 💡 Examples
 
-In these examples it is assumed the existence of data ``X\in \mathbb{R}^{T \times N_X}`` with sampling rate `sr` and labels `sensors`.
+The examples here below assume the existence of data ``X\in \mathbb{R}^{T \times N_X}``, sampling rate `sr` and labels `sensors`:
 
 ```julia
 using EEGPlot, CairoMakie # or GLMakie for interactive plots
