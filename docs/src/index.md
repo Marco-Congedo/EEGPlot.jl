@@ -231,7 +231,7 @@ function eegplot(X, sr, X_labels; args...)
 | `i_panel_font_size`| Int ≥ 4          | help panel font size     | 14                |
 | `start_pos`       | Int ≥ 1           | first sample to show      | 1 (first sample)  |
 | `win_length`      | Int ≥ 0;  0 = Auto| number of samples to show | 0                 |
-| `px_per_sec`      | Int ≥ 100         | number of pixels to cover 1s | 200            |
+| `px_per_sec`      | Int ≥ 0           | number of pixels to cover 1s | 180            |
 | `init_scale`      | Real > 0          | initial scaling           | 0.61803...        |
 | `scale_change`    | Real > 0          | speed of scale change using [Interactions](@ref) | 0.1   |
 | `image_quality`   |  1 ≤ Int ≤ 4      | Image quality for saving using [Interactions](@ref) | 1  |
@@ -273,13 +273,13 @@ eegplot(X, sr, sensors;
 
 # Change pixels per second (time-constant)
 eegplot(X, sr, sensors; 
-        px_per_sec = 300)
+        px_per_sec = 280)
 
 # Notice that the data is plotted with the same time-constant
 # regardless the sampling rate. For example, doubling the sr
 using Eegle # for `resample`
 eegplot(resample(X, sr, 2), 256, sensors; 
-        px_per_sec = 300)
+        px_per_sec = 280)
 
 # Change titles and colors
 eegplot(X, sr, sensors; 

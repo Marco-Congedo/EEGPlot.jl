@@ -93,7 +93,7 @@ function eegplot(
     i_panel_font_size::Int = 14,
     start_pos::Int = 1,
     win_length::Int = 0, 
-    px_per_sec::Int = 200, # Constant scale: about 240 pixels = 1 second
+    px_per_sec::Int = 180, # Constant scale: about 180 pixels = 1 second
     init_scale::T = 0.6180339887498948,
     scale_change::T = 0.1,
     image_quality::Int = 1,
