@@ -318,8 +318,8 @@ The following commands are available only in [interactive mode](@ref "Static and
 
 - *'X'*: show the ``X`` dataset
 - *'O'*: show the ``overlay`` dataset (if `overlay` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
-- *'B'*: show both ``X`` and ``overlay`` dataset (*ibidem*)
-- *'D'*: show the difference ``X - overlay`` (*ibidem*)
+- *'B'*: show both ``X`` and ``overlay`` dataset (*idem*)
+- *'D'*: show the difference ``X - overlay`` (*idem*)
 - *Shift + ↑/↓*: scale ``X`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 
 *▾ Lower Panel* (if `Y` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
