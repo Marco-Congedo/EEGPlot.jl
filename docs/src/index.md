@@ -45,7 +45,7 @@ Two backends for `Makie.jl` are supported:
 Execute the following commands in Julia's REPL:
 
 ```julia
-]add EEGPlot
+]add https://github.com/Marco-Congedo/EEGPlot.jl
 ```
 
 ***
