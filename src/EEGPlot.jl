@@ -587,8 +587,9 @@ function eegplot(
 
     notify(y_scale)
     if !isnothing(splitter); splitter.blockscene.visible[] = y_panel_visible[]; end
-    
-    display(fig)
+    if get(ENV, "JULIA_PLOT_HEADLESS", "false") == "false"
+        display(fig)
+    end
     resize_to_layout!(fig) # Forces window to shrink/expand to fit the fixed axis precisely
     println(defaultFont, "Done ")
     return fig

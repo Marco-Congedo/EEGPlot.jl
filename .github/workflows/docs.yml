@@ -43,6 +43,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
         JULIA_DEBUG: Documenter
+        JULIA_PLOT_HEADLESS: "true"
       run: >
           cd docs;
           DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
