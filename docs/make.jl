@@ -27,7 +27,7 @@ if CI
     deploydocs(
         repo = "github.com/Marco-Congedo/EEGPlot.jl.git",
         devbranch = "master",
-        push_preview = true,  # allows preview for PRs
+        push_preview = false,  # do not allow preview for PRs
     )
 else
     include("local_run.jl")  # optional local run

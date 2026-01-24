@@ -1,14 +1,14 @@
 | Logo | Documentation | 
 |:-----:|:-----:|
-|  <img src="docs/src/assets/logo_small.png" height="90">   |  [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)
- | 
+|  <img src="docs/src/assets/logo_small.png" height="90">   |  [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)| 
+
 ---
 
 **EEGPlot** in a julia package to plot electroencephalographic data (EEG).
 
 It can be used in two modes:
  - *STATIC*: mainly to create figures
- - *INTERACTIVE*: to inspect the data, like in this video.
+ - *INTERACTIVE*: to inspect the data, like in this video:
 
 ![Animation](https://github.com/user-attachments/assets/4aa7dcca-4207-4a89-a764-a0d101f26f94)
 
@@ -24,7 +24,7 @@ It can be used in two modes:
 Execute the following command in julia's REPL:
 
 ```julia
-    ]add https://github.com/Marco-Congedo/EEGPlot.jl
+]add https://github.com/Marco-Congedo/EEGPlot.jl
 ```
 ---
 
