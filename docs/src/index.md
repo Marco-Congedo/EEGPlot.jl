@@ -23,12 +23,12 @@ Two backends for `Makie.jl` are supported:
 !!! tip "Dataset overlay"
     Using an interactive plot, it is simple to view only the first dataset, only the second, the first and the second or their difference;
 
-- the *lower panel* can show a third dataset, which may have a different number of channels.
+- the *lower panel* can show yet another dataset, which may have a different number of channels.
 
 !!! tip "Panel Synchronization"
     When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
-    This is very useful when inspecting a dataset along with spatial filters or source separation components, 
-    a dataset decomposed in artifacts plus a cleaned component, etc.
+    This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
+    inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
 
 ***
 
@@ -52,7 +52,7 @@ Execute the following commands in Julia's REPL:
 
 ## —͟͟͞͞★ Quick Start
 
-All examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
+The following examples use [Eegle.jl](https://github.com/Marco-Congedo/Eegle.jl) for reading example data
 and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these packages:
 
 ```julia
@@ -91,7 +91,7 @@ eegplot(X, sr, sensors; fig_size=(814, 450))
 
 ### Plotting Multiple Datasets
 
-The following example illustrates the [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis). The workflow is :
+The following example illustrates the inspection of [PCA](https://en.wikipedia.org/wiki/Principal_component_analysis) components. The workflow is :
 
 - compute ``u``, the principal axis of data ``X``, as the eigenvector of its covariance matrix associated to the largest eigenvalue,
 - compute ``y``, the principal component time series (principal component score or activation), as 
@@ -124,7 +124,7 @@ In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in gr
 
 ### Interactive Plots
 
-It is obtained using the *GLMakie* backend instead. For example, to obtain an interactive plot
+It is obtained using the *GLMakie* backend instead. The syntax of `eegPlot` does not change ta all. For example, to obtain an interactive plot
 of the PCA above, we would do
 
 ```julia
@@ -144,14 +144,14 @@ P = y * u'
 # The syntax is exactly the same as above
 eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1)
 ```
-The interactive plot allows to [interact](@ref "Interactions") with it. It looks like this:
+Such plots allows [interactions](@ref "Interactions"). It looks like this:
 
 ![](assets/fig2.png)
 
 Note that in addition to static plots, interactive plots feature:
 - a *central slider* to resize the upper and lower panels,
 - a *slider at the bottom of the window* to scroll the data,
-- an *help panel* summarizing the interaction controls.
+- an *help panel* summarizing the interaction controls. 
 
 !!! warning "Check the task bar"
     Interactive plots open as a separate window. The window may open minimized. 
@@ -163,7 +163,8 @@ Note that in addition to static plots, interactive plots feature:
 ### ERPs
 
 For an example of plotting evoked potentials, we will consider the example P300 file
-provided by `Eegle.jl`. Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
+provided by `Eegle.jl`. In P300 experiments, we are interested in two classes of ERP, named "target" and "nontarget".
+Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
 for details on the ERP computations.
 
 ```@example ERP; eval=false
@@ -316,19 +317,19 @@ The following commands are available only in [interactive mode](@ref "Static and
 *▴ Upper Panel*
 
 - *'X'*: show the ``X`` dataset
-- *'O'*: show the ``overlay`` dataset
-- *'B'*: show both ``X`` and ``overlay`` dataset
-- *'D'*: show the difference ``X - overlay``
+- *'O'*: show the ``overlay`` dataset (if `overlay` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
+- *'B'*: show both ``X`` and ``overlay`` dataset (*ibidem*)
+- *'D'*: show the difference ``X - overlay`` (*ibidem*)
 - *Shift + ↑/↓*: scale ``X`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 
 *▾ Lower Panel*
 
-- *'Y'*: toggle Y data (lower panel) visibility
+- *'Y'*: toggle Y data (lower panel) visibility (if `Y` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
 - *Ctrl + ↑/↓*: scale ``Y`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *Slider*: resize the lower panel
 
 *⌖ Navigation*
-- *←/→*: scroll backward and forward the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *←/→*: scroll backward and forward the dataset(s) 
 - *↑/↓*: scale up and down the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *Page Up*: move to begin of dataset(s)
 - *Page Down*: move to end of dataset(s)
@@ -338,7 +339,7 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'M'*: toggle the status of the plot window (maximized/normal)
 - *'Esc'*: restore the normal status if the window is maximized
 - *'S'*: save the plot in the current directory as a *.png* file (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
-- *'C'*: copy the plot to the clipboard (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- *'C'*: copy the plot to the clipboard (*ibidem*)
 - *'H'*: toggle the visibility of the help panel
 
 ### ⊕ Mouse Controls
