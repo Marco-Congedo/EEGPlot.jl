@@ -1,6 +1,7 @@
 | Logo | Documentation | 
 |:-----:|:-----:|
-|  <img src="docs/src/assets/logo_small.png" height="90">   | [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl) | 
+|  <img src="docs/src/assets/logo_small.png" height="90">   |  [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)
+ | 
 ---
 
 **EEGPlot** in a julia package to plot electroencephalographic data (EEG).
@@ -39,4 +40,5 @@ Please contact the authors if you are interested in contributing.
 ---
 ## 🎓 Documentation   
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl/stable) 
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)
+
