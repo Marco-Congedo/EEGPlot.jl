@@ -159,23 +159,35 @@ Note that in addition to static plots, interactive plots feature:
 
 ### Event Markers
 
-For an example of plotting EEG data with event markers, we will consider the example *Motor Imagery* file
-provided by `Eegle.jl`. In the session, there are 3s trials of "right hand" and "feet" movement imagination, as well as 3s "rest" trials.
+For an example of plotting EEG data with *event markers*, we will consider the example *Motor Imagery* file
+provided by `Eegle.jl`. In the recording, there are 3s trials of "rest" as well as "right hand" and "feet" movement imagination.
 
-Tags are plotted if the `stim` keyword argument is provided. This argument is a vector of integer forming a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector). 
+Tags are plotted if the `stim` keyword argument is provided. This argument is a `Vector{Int}` forming a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector). 
 
-See [kwargs](@ref "Optional Keyword Arguments (kwargs)") for a list of all available keyword arguments for plotting tags. 
+In this session the sampling rate is 256 samples per second and the duration of each trial is three seconds = 768 samples. 
+Theses values are accessible in the `.sr` and `.wl` (window length) fields of the `o` object that will 
+be created by Eegle's `readNY` function. 
 
-```julia
+!!! tip "Event markers duration"
+    By default, event markers are drawn as vertical lines at the onset of each event.
+    To draw event markers as semi-transparent rectangles covering the whole event duration, 
+    provide the `stim_wl` keyword argument. See [kwargs](@ref "Optional Keyword Arguments (kwargs)") 
+    for a list of all available keyword arguments for plotting tags. 
+
+```@example Tags; 
+using EEGPlot, Eegle, CairoMakie
+
 o = Eegle.readNY(EXAMPLE_MI_1)
 
 eegplot(o.X, o.sr, o.sensors;
-    stim=o.stim,
-    stim_labels=o.clabels, # o.clabels = ["right hand", "feet", "rest"]
-    stim_wl=o.wl, # o.wl = 3*o.sr = 768 samples
-    X_title="Motor Imagery data",
-    X_labels_font_size=14,
-    s_labels_font_size=13
+        fig_size=(814, 614),
+        stim=o.stim,
+        stim_labels=o.clabels, # o.clabels = ["right_hand", "feet", "rest"]
+        stim_wl=o.wl, 
+        stim_legend_font=14,
+        X_title="Motor Imagery data",
+        start_pos=round(Int(o.sr*12.5)), 
+        px_per_sec=150
 )
 ```
 
@@ -218,7 +230,6 @@ eegplot(T_ERP, o.sr, o.sensors;
         init_scale = 0.7,
         X_title = "EPR target (grey) and nontarget (red)")
 ```
-
 For plotting ERPs, see also [UnfoldMakie](https://github.com/unfoldtoolbox/UnfoldMakie.jl).
 
 [▲ Index of working examples](@ref "Index of working examples")
