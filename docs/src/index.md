@@ -30,7 +30,7 @@ Two backends for `Makie.jl` are supported:
     This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
     inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
 
-**EEGPlot** can also plot event markers (also called triggers, stimulations or tags), both as lines delimiting the onset of the event or as semi-transparent boxes covering the whole event duration.
+**EEGPlot** can also plot *event markers* (also called triggers, stimulations or tags), both as lines delimiting the onset of the event or as semi-transparent boxes covering the whole event duration.
 
 ## 🧩 Requirements 
 
@@ -147,7 +147,8 @@ Such plots allows [interactions](@ref "Interactions") and look like this:
 Note that in addition to static plots, interactive plots feature:
 - a *central slider* to resize the upper and lower panels,
 - a *slider at the bottom of the window* to scroll the data,
-- an *help panel* summarizing the interaction controls (visible by default). 
+- an *help panel* summarizing the interaction controls (visible by default).
+- if tags (event markers) are plotted, a *legend* for the tags. 
 
 !!! warning "Check the task bar"
     Interactive plots open as a separate window. The window may open minimized. 
@@ -161,23 +162,23 @@ Note that in addition to static plots, interactive plots feature:
 For an example of plotting EEG data with event markers, we will consider the example *Motor Imagery* file
 provided by `Eegle.jl`. In the session, there are 3s trials of "right hand" and "feet" movement imagination, as well as 3s "rest" trials.
 
-Tags are plotted if the `stim` keyword argument is provided. This is a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector). 
+Tags are plotted if the `stim` keyword argument is provided. This argument is a vector of integer forming a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector). 
 
 See [kwargs](@ref "Optional Keyword Arguments (kwargs)") for a list of all available keyword arguments for plotting tags. 
 
 ```julia
 o = Eegle.readNY(EXAMPLE_MI_1)
 
-eegplot(o.X, o.sr;
+eegplot(o.X, o.sr, o.sensors;
     stim=o.stim,
-    stim_labels=o.clabels, # = ["right hand", "feet", "rest"]
-    stim_wl=o.wl, # = 3*o.sr = 768 samples
+    stim_labels=o.clabels, # o.clabels = ["right hand", "feet", "rest"]
+    stim_wl=o.wl, # o.wl = 3*o.sr = 768 samples
     X_title="Motor Imagery data",
     X_labels_font_size=14,
-    X_labels=o.sensors,
     s_labels_font_size=13
 )
 ```
+
 [▲ Index of working examples](@ref "Index of working examples")
 
 ***
@@ -227,7 +228,7 @@ For plotting ERPs, see also [UnfoldMakie](https://github.com/unfoldtoolbox/Unfol
 ## 🔌 API
 
 !!! note "TTFP"
-    As usual in Julia the time to first plot (TTFP) may be long, especially when using the `GLMakie` backend for interactive plots.
+    As usual in Julia, the time to first plot (TTFP) may be long, especially when using the `GLMakie` backend for interactive plots.
     From the second plot on, it will be much faster.
 
 The package exports one function only:
@@ -255,7 +256,7 @@ function eegplot(X, sr, X_labels; kwargs...)
 | `X_title_font_size`| `Int` > 0           | font size of the plot title| 14               |
 | `overlay`         | `Matrix` ``\in \mathbb{R}^{T \times N_X}`` | ``overlay`` dataset | nothing |
 | `overlay_color`   | `Symbol`          | color of ``overlay`` dataset| :firebrick     |
-| `diff_color`      | `Symbol`          | color of ``X - overlay`` difference| :cornflower |
+| `diff_color`      | `Symbol`          | color of ``(X - overlay)`` difference| :cornflower |
 | `Y`               | `Matrix` ``\in \mathbb{R}^{T \times N_Y}`` | lower panel dataset  | nothing |
 | `Y_color`         | `Symbol`          | color of lower dataset    | :darkgreen        |
 | `Y_labels`        | `Vector{String}`  | lower panel labels        | nothing           |
@@ -364,10 +365,10 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'X'*: show the ``X`` dataset
 - *'O'*: show the ``overlay`` dataset (if `overlay` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
 - *'B'*: show both ``X`` and ``overlay`` dataset (*idem*)
-- *'D'*: show the difference ``X - overlay`` (*idem*)
+- *'D'*: show the difference ``(X - overlay)`` (*idem*)
 - *Shift + ↑/↓*: scale ``X`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 
-*▾ Lower Panel* (if `Y` [kwarg](@ref "Optional Keyword Arguments (kwargs)") is passed)
+*▾ Lower Panel* (if [kwarg](@ref "Optional Keyword Arguments (kwargs)") `Y` is passed)
 
 - *'Y'*: toggle Y data (lower panel) visibility 
 - *Ctrl + ↑/↓*: scale ``Y`` up/down (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
@@ -376,11 +377,9 @@ The following commands are available only in [interactive mode](@ref "Static and
 *⌖ Navigation* (apply to all visible panels)
 - *←/→*: scroll backward and forward the dataset(s) 
 - *↑/↓*: scale up and down the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
-- **[Up/Down Arrow]**: move to the previous/next channel.
-- **[PgUp/PgDn]**: move to the previous/next page of channels.
 - *Page Up*: move to begin of dataset(s)
 - *Page Down*: move to end of dataset(s)
-- **[T]**: toggle stimulation markers.
+- *T*: toggle event markers visibility.
 
 *⚙ Tools*
 
@@ -388,13 +387,13 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'Esc'*: restore the normal status if the window is maximized
 - *'S'*: save the plot in the current directory as a *.png* file (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *'C'*: copy the plot to the clipboard
-- *'H'*: toggle the visibility of the help or stimulation legend panels
-- **[Mouse Click]** on the help or stimulation legend panels: hide these panels successively
+- *'H'*: toggle the visibility of the help or event markers legend panels
 
 ### ⊕ Mouse Controls
 
 - *Click & Drag*: zoom along the time-axis
 - *Ctrl + Click*: reset the view as it was before zooming.
+- *Mouse Click on the help or event markers legend panel: hide these panels successively
 
 ***
 
