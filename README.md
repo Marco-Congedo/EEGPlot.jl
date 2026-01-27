@@ -24,7 +24,7 @@ It can be used in two modes:
 Execute the following command in julia's REPL:
 
 ```julia
-]add https://github.com/Marco-Congedo/EEGPlot.jl
+]add EEGPlot
 ```
 ---
 
@@ -39,7 +39,7 @@ Please contact the authors if you are interested in contributing.
 
 ---
 
-## 🎓 Documentation   
+## 📘 Documentation   
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)
 
