@@ -30,7 +30,7 @@ Two backends for `Makie.jl` are supported:
     This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
     inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
 
-***
+**EEGPlot** can also plot event markers (also called triggers, stimulations or tags), both as lines delimiting the onset of the event or as semi-transparent boxes covering the whole event duration.
 
 ## 🧩 Requirements 
 
@@ -45,7 +45,7 @@ Two backends for `Makie.jl` are supported:
 Execute the following commands in Julia's REPL:
 
 ```julia
-]add https://github.com/Marco-Congedo/EEGPlot.jl
+]add EEGPlot
 ```
 
 ***
@@ -66,6 +66,7 @@ and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these 
 - [Static Plots](@ref) 
 - [Plotting Multiple Datasets](@ref) 
 - [Interactive Plots](@ref) 
+- [Event Markers](@ref)
 - [ERPs](@ref)
 
 See also [Examples](@ref).
@@ -114,7 +115,11 @@ sensors = readSensors(EXAMPLE_Normative_1_sensors);
 u = eigvecs(covmat(X; covtype=SCM))[:, end]
 y = X * reshape(u, :, 1) # using reshape, y will be a Tx1 Matrix
 P = y * u'
-eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1, fig_size=(814, 614))
+eegplot(X, sr, sensors; 
+        fig_size=(814, 614),
+        overlay=P, 
+        Y=y, 
+        Y_size=0.1)
 ```
 In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in green.
 
@@ -124,8 +129,8 @@ In the plot above, we see ``X`` in dark grey, ``P`` in brick red and ``y`` in gr
 
 ### Interactive Plots
 
-It is obtained using the *GLMakie* backend instead. The syntax of `eegPlot` does not change ta all. For example, to obtain an interactive plot
-of the PCA above, we would do:
+It is obtained using the *GLMakie* backend instead. The syntax of `eegPlot` does not change at all. For example, to obtain an interactive plot
+of the PCA above, we would replace the first line above with:
 
 ```julia
 using GLMakie
@@ -133,16 +138,7 @@ using GLMakie
 # since you may have been using CairoMakie, make sure to switch backend
 GLMakie.activate!()
 
-# read example EEG data, sampling rate and sensor labels from Eegle
-X, sr = readASCII(EXAMPLE_Normative_1), 128;
-sensors = readSensors(EXAMPLE_Normative_1_sensors);
-
-u = eigvecs(covmat(X; covtype=SCM))[:, end]
-y = X * reshape(u, :, 1) # using reshape, y will be a Tx1 Matrix
-P = y * u'
-
-# The syntax is exactly the same as above
-eegplot(X, sr, sensors; overlay=P, Y=y, Y_size=0.1)
+# Anything else is the same as above
 ```
 Such plots allows [interactions](@ref "Interactions") and look like this:
 
@@ -160,22 +156,53 @@ Note that in addition to static plots, interactive plots feature:
 
 ***
 
+### Event Markers
+
+For an example of plotting EEG data with event markers, we will consider the example *Motor Imagery* file
+provided by `Eegle.jl`. In the session, there are 3s trials of "right hand" and "feet" movement imagination, as well as 3s "rest" trials.
+
+Tags are plotted if the `stim` keyword argument is provided. This is a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector). 
+
+See [kwargs](@ref "Optional Keyword Arguments (kwargs)") for a list of all available keyword arguments for plotting tags. 
+
+```julia
+o = Eegle.readNY(EXAMPLE_MI_1)
+
+eegplot(o.X, o.sr;
+    stim=o.stim,
+    stim_labels=o.clabels, # = ["right hand", "feet", "rest"]
+    stim_wl=o.wl, # = 3*o.sr = 768 samples
+    X_title="Motor Imagery data",
+    X_labels_font_size=14,
+    X_labels=o.sensors,
+    s_labels_font_size=13
+)
+```
+[▲ Index of working examples](@ref "Index of working examples")
+
+***
+
 ### ERPs
 
-For an example of plotting evoked potentials, we will consider the example P300 file
+For an example of plotting evoked potentials, we will consider the example *P300* file
 provided by `Eegle.jl`. In P300 experiments, we are interested in two classes of ERP, named "target" and "nontarget".
 Please see [Eegle.ERPs](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/)
 for details on the ERP computations.
 
 ```@example ERP; 
 using EEGPlot, Eegle, CairoMakie
-CairoMakie.activate!()
+CairoMakie.activate!() # let's make it static
 
 # read the example file for the P300 BCI paradigm
-o = readNY(EXAMPLE_P300_1, rate=4, upperLimit=1.2, bandPass=(1, 24)) # See Eegle.readNY
+o = readNY(EXAMPLE_P300_1; 
+            rate=4, 
+            upperLimit=1.2, 
+            bandPass=(0.5, 32)) # See Eegle.readNY
 
 # compute means (adaptive weights and multivariate regression)
-M = mean(o; overlapping=true, weights=:a) # See Eegle.mean
+M = mean(o; 
+        overlapping=true, 
+        weights=:a) # See Eegle.mean
 
 # target and non-target average ERP
 T_ERP = M[findfirst(isequal("target"), o.clabels)]
@@ -199,42 +226,58 @@ For plotting ERPs, see also [UnfoldMakie](https://github.com/unfoldtoolbox/Unfol
 
 ## 🔌 API
 
+!!! note "TTFP"
+    As usual in Julia the time to first plot (TTFP) may be long, especially when using the `GLMakie` backend for interactive plots.
+    From the second plot on, it will be much faster.
+
 The package exports one function only:
 
 ```julia
-function eegplot(X, sr, X_labels; args...)
+function eegplot(X, sr, X_labels; kwargs...)
 ```
 
 ### Arguments
 
-1. a matrix ``X \in \mathbb{R}^{T \times N_X}`` for the upper panel, where ``T`` and ``N_X`` are the number of samples and channels,
-2. the sampling rate of dataset ``X`` (Int),
-3. the labels of ``X`` (Vector of String), which can be omitted.
+1. a `Matrix` ``X \in \mathbb{R}^{T \times N_X}`` for the upper panel, where ``T`` and ``N_X`` are the number of samples and channels,
+2. the sampling rate of dataset ``X`` (`Int`),
+3. the labels of ``X`` (`Vector{String}`), which can be omitted.
 
 ### Optional Keyword Arguments (kwargs)
 
 | Argument          | Type              | Description               | Default value     |
 |:------------------|:------------------|:--------------------------|:------------------|
-| `fig_size`        | 2-tuple of Int    | size of the plot          | (1400, 800)       |
-| `X_title`         | String            | title of the upper panel  | nothing           |
-| `X_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of ``X`` dataset | :grey24 | 
-| `overlay`         | Matrix ``\in \mathbb{R}^{T \times N_X}``  | ``overlay`` dataset       | nothing           |
-| `overlay_color`   | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the ``overlay`` dataset| :firebrick |
-| `diff_color`      | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of the difference ``X - overlay``| :cornflower |
-| `Y`               | Matrix ``\in \mathbb{R}^{T \times N_Y}``   | lower panel dataset       | nothing           |
-| `Y_labels`        | Vector of String  | lower panel labels        | nothing           |
-| `Y_title`         | String            | title of the lower panel  | nothing           |
-| `Y_color`         | Symbol ([named color](https://juliagraphics.github.io/Colors.jl/stable/namedcolors/)) | color of lower panel dataset| :darkgreen|
-| `Y_size`          | 0.05 < Real < 0.95 | title of the lower panel  | nothing           |
-| `i_panel`         | Bool              | help panel visibility     | true              |
-| `i_panel_font`    | String            | help panel font           | "DejaVu Sans"     |
-| `i_panel_font_size`| Int ≥ 4          | help panel font size     | 14                |
-| `start_pos`       | Int ≥ 1           | first sample to show      | 1 (first sample)  |
-| `win_length`      | Int ≥ 0;  0 = Auto| number of samples to show | 0                 |
-| `px_per_sec`      | Int ≥ 0           | number of pixels to cover 1s | 180            |
-| `init_scale`      | Real > 0          | initial scaling           | 0.61803...        |
-| `scale_change`    | Real > 0          | speed of scale change using [Interactions](@ref) | 0.1   |
-| `image_quality`   |  1 ≤ Int ≤ 4      | Image quality for saving using [Interactions](@ref) | 1  |
+| `fig_size`        | `Union{Symbol,Tuple}` | size of the plot (`:auto`, cover ≈90% of screen, or a tuple, e.g., `(1400, 864)`) | `:auto` |
+| `fig_padding`     | `Int` ≥ 0         | padding of the figure in pixels     | 5                 |
+| `font`            | `String`          | font to be used everywhere in the plot| "DejaVu Sans"     |
+| `X_color`         | `Symbol`          | color of ``X`` dataset     | :grey24           | 
+| `X_labels_font_size`| `Int` > 0           | font size of channel labels| 12                |
+| `X_title`         | `String`          | title of the upper panel  | nothing           |
+| `X_title_font_size`| `Int` > 0           | font size of the plot title| 14               |
+| `overlay`         | `Matrix` ``\in \mathbb{R}^{T \times N_X}`` | ``overlay`` dataset | nothing |
+| `overlay_color`   | `Symbol`          | color of ``overlay`` dataset| :firebrick     |
+| `diff_color`      | `Symbol`          | color of ``X - overlay`` difference| :cornflower |
+| `Y`               | `Matrix` ``\in \mathbb{R}^{T \times N_Y}`` | lower panel dataset  | nothing |
+| `Y_color`         | `Symbol`          | color of lower dataset    | :darkgreen        |
+| `Y_labels`        | `Vector{String}`  | lower panel labels        | nothing           |
+| `Y_labels_font_size`| `Int` > 0         | font size of lower panel labels | 12                |
+| `Y_title`         | `String`          | title of the lower panel  | nothing           |
+| `Y_title_font_size`| `Int` > 0           | font size of lower panel title  | 14                |
+| `Y_size`          | 0 < `Real` < 1    | relative size of lower panel| 0.5             |
+| `s_labels_font_size`| `Int` > 0         | x-axis labels font size  | 12                |
+| `stim`            | `Vector{Int}` | stimulation vector (tags)| nothing     |
+| `stim_labels`     | `Vector{String}`  | labels for the tags   | nothing           |
+| `stim_colors`     | `Vector{Symbol}`  | colors for the tags   | nothing           |
+| `stim_wl`         | `Real`            | duration of the tags in samples     | 0.5               |
+| `stim_α`          | 0 < `Real` < 1 | transparency of the tags| stim_wl == 1 ? 0.8 : 0.161...  |
+| `stim_legend_font`| `Int` > 0             | font size of the tags legend  | 12                |
+| `i_panel`         | `Bool`            | help panel visibility     | true if interactive  |
+| `i_panel_font_size`| `Int` > 0          | help panel font size      | 13                |
+| `start_pos`       | `Int` ≥ 1           | first sample to show      | 1 (first sample)  |
+| `win_length`      | `Int` ≥ 0;  0 = Auto| number of samples to show | 0                 |
+| `px_per_sec`      | `Int` > 0         | number of pixels to cover 1s | 180            |
+| `init_scale`      | `Real` > 0          | initial scaling           | 0.61803...        |
+| `scale_change`    | `Real` > 0          | speed of scale change     | 0.1               |
+| `image_quality`   |  1 ≤ `Int` ≤ 4      | Image quality for saving  | 1                 |
 
 ***
 
@@ -291,7 +334,7 @@ eegplot(X, sr, sensors;
         )
 
 # Start plotting from second 2    
-heegplot(X, sr, sensors; 
+eegplot(X, sr, sensors; 
         start_pos = sr*2)
 
 # Start plotting from an arbitrary sample (345)
@@ -333,8 +376,11 @@ The following commands are available only in [interactive mode](@ref "Static and
 *⌖ Navigation* (apply to all visible panels)
 - *←/→*: scroll backward and forward the dataset(s) 
 - *↑/↓*: scale up and down the dataset(s) (use `scale_change` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
+- **[Up/Down Arrow]**: move to the previous/next channel.
+- **[PgUp/PgDn]**: move to the previous/next page of channels.
 - *Page Up*: move to begin of dataset(s)
 - *Page Down*: move to end of dataset(s)
+- **[T]**: toggle stimulation markers.
 
 *⚙ Tools*
 
@@ -342,7 +388,8 @@ The following commands are available only in [interactive mode](@ref "Static and
 - *'Esc'*: restore the normal status if the window is maximized
 - *'S'*: save the plot in the current directory as a *.png* file (use `image_quality` [kwarg](@ref "Optional Keyword Arguments (kwargs)"))
 - *'C'*: copy the plot to the clipboard
-- *'H'*: toggle the visibility of the help panel
+- *'H'*: toggle the visibility of the help or stimulation legend panels
+- **[Mouse Click]** on the help or stimulation legend panels: hide these panels successively
 
 ### ⊕ Mouse Controls
 
