@@ -267,7 +267,7 @@ function eegplot(X, sr, X_labels; kwargs...)
 | `stim`            | `Vector{Int}` | stimulation vector (tags)| nothing     |
 | `stim_labels`     | `Vector{String}`  | labels for the tags   | nothing           |
 | `stim_colors`     | `Vector{Symbol}`  | colors for the tags   | nothing           |
-| `stim_wl`         | `Real`            | duration of the tags in samples     | 0.5               |
+| `stim_wl`         | `Real`            | duration of the tags in samples     | 1 (show a line) |
 | `stim_α`          | 0 < `Real` < 1 | transparency of the tags| stim_wl == 1 ? 0.8 : 0.161...  |
 | `stim_legend_font`| `Int` > 0             | font size of the tags legend  | 12                |
 | `i_panel`         | `Bool`            | help panel visibility     | true if interactive  |
