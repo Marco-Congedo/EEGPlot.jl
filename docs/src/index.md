@@ -404,7 +404,6 @@ The following commands are available only in [interactive mode](@ref "Static and
 
 - *Click & Drag*: zoom along the time-axis
 - *Ctrl + Click*: reset the view as it was before zooming.
-- *Mouse Click on the help or event markers legend panel: hide these panels successively
 
 ***
 

@@ -514,26 +514,6 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
     colgap!(fig.layout, 0)
     rowgap!(fig.layout, 0)
 
-    # Combined click-to-hide logic
-    on(events(fig).mousebutton) do ev
-        if ev.action == Mouse.press && ev.button == Mouse.left
-            m_pos = events(fig).mouseposition[]
-
-            # Check Instructions (Column 3)
-            if panel_visible[] && Makie.is_mouseinside(instr_panel.blockscene)
-                panel_visible[] = false
-                return Consume(true)
-            end
-
-            # Check Legend (Column 2)
-            if !isnothing(stim) && tags_visible[] && Makie.is_mouseinside(stim_legend.blockscene)
-                tags_visible[] = false
-                return Consume(true)
-            end
-        end
-        return Consume(false)
-    end
-
     # ----------------------
     # Plotting Logic
     # ----------------------
