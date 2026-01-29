@@ -2,35 +2,52 @@
 
 A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroencephalography (EEG) and event-related potentials (ERP). 
 
-## ⚙️ Static and Interactive mode
+## ⚙️ Features
+
+### Static and Interactive mode
+
 
 Two backends for `Makie.jl` are supported:
 
 - `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures;
 - `GLMakie.jl`, which produces an **INTERACTIVE** plot — for data inspection.
 
-!!! note "Switching backend"
+!!! tip "Switching backend"
     To switch from one backend to the other, use `GLMakie.activate!()` and `CairoMakie.activate!()`.
 
 ***
 
-## 📈 Datasets
+### Datasets
 
 **EEGPlot** can plot several datasets at the same time, employing two panels:
 
 - the *upper panel* shows an EEG/ERP dataset and can overlay another one with the exact same dimension. 
 
-!!! tip "Dataset overlay"
+!!! tip "Dataset *overlay*"
     Using an interactive plot, it is simple to view only the first dataset, only the second, both or their difference;
 
 - the *lower panel* can show yet another dataset, which may have a different number of channels.
 
 !!! tip "Panel Synchronization"
     When both panels are used, scrolling and zooming in the datasets on the upper and lower panel is **synchronized**.
-    This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
-    inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
+    !!! note 
+        This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
+        inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
 
-**EEGPlot** can also plot *event markers* (also called triggers, stimulations or tags), both as lines delimiting the onset of the event or as semi-transparent boxes covering the whole event duration.
+### Event Markers
+
+**EEGPlot** can plot *event markers* (also called triggers, stimulations or tags), both as 
+- *lines* indicating the onset of the event (default) or as 
+- *semi-transparent boxes* delimiting whatever time-interval after onset (using `stim_wl` keyword argument). 
+
+The plot of the tags is controlled by keyword arguments `stim`, `stim_labels`, `stim_colors`, `stim_wl`, `stim_α` and `stim_legend_font`. See quick start [Show Event Markers](@ref) for an example.
+
+### Time Constant
+
+As it should always be when plotting EEG data, the *time constant* (i.e., the number of pixels per second) is held constant in the plot,
+regardless the sampling rate and the plot size. 
+
+The time constant is controlled by the `px_per_sec` keyword argument.
 
 ## 🧩 Requirements 
 
@@ -66,7 +83,7 @@ and of both *Makie's* backends `GLMakie` and `CairoMakie`. First, install these 
 - [Static Plots](@ref) 
 - [Plotting Multiple Datasets](@ref) 
 - [Interactive Plots](@ref) 
-- [Event Markers](@ref)
+- [Show Event Markers](@ref)
 - [ERPs](@ref)
 
 See also [Examples](@ref).
@@ -157,7 +174,7 @@ Note that in addition to static plots, interactive plots feature:
 
 ***
 
-### Event Markers
+### Show Event Markers
 
 For an example of plotting EEG data with *event markers*, we will consider the example *Motor Imagery* file
 provided by `Eegle.jl`. In the recording, there are 3s trials of "rest" as well as "right hand" and "feet" movement imagination.
@@ -171,7 +188,7 @@ be created by Eegle's `readNY` function.
 !!! tip "Event markers duration"
     By default, event markers are drawn as vertical lines at the onset of each event.
     To draw event markers as semi-transparent rectangles covering the whole event duration, 
-    provide the `stim_wl` keyword argument. See [kwargs](@ref "Optional Keyword Arguments (kwargs)") 
+    provide the `stim_wl` keyword argument, like here below. See [kwargs](@ref "Optional Keyword Arguments (kwargs)") 
     for a list of all available keyword arguments for plotting tags. 
 
 ```@example Tags; 
@@ -276,20 +293,20 @@ function eegplot(X, sr, X_labels; kwargs...)
 | `Y_title_font_size`| `Int` > 0           | font size of lower panel title  | 14                |
 | `Y_size`          | 0 < `Real` < 1    | relative size of lower panel| 0.5             |
 | `s_labels_font_size`| `Int` > 0         | x-axis labels font size  | 12                |
-| `stim`            | `Vector{Int}` | stimulation vector (tags)| nothing     |
+| `stim`            | `Vector{Int}` | a [stimulaton vector](https://marco-congedo.github.io/Eegle.jl/stable/ERPs/#stimulation-vector) (tags)| nothing     |
 | `stim_labels`     | `Vector{String}`  | labels for the tags   | nothing           |
-| `stim_colors`     | `Vector{Symbol}`  | colors for the tags   | nothing           |
+| `stim_colors`     | `Vector{Symbol}`  | colors for the tags (by default, a set of distinguishable colors is chosen)  | nothing           |
 | `stim_wl`         | `Real`            | duration of the tags in samples     | 1 (show a line) |
-| `stim_α`          | 0 < `Real` < 1 | transparency of the tags| stim_wl == 1 ? 0.8 : 0.161...  |
+| `stim_α`          | 0 < `Real` < 1 | transparency of the tags| stim_wl == 1 ? 0.8 : 0.161803...  |
 | `stim_legend_font`| `Int` > 0             | font size of the tags legend  | 12                |
 | `i_panel`         | `Bool`            | help panel visibility     | true if interactive  |
 | `i_panel_font_size`| `Int` > 0          | help panel font size      | 13                |
 | `start_pos`       | `Int` ≥ 1           | first sample to show      | 1 (first sample)  |
-| `win_length`      | `Int` ≥ 0;  0 = Auto| number of samples to show | 0                 |
+| `win_length`      | `Int` ≥ 0         | number of samples to show | 0 (fill the available space)                |
 | `px_per_sec`      | `Int` > 0         | number of pixels to cover 1s | 180            |
 | `init_scale`      | `Real` > 0          | initial scaling           | 0.61803...        |
 | `scale_change`    | `Real` > 0          | speed of scale change     | 0.1               |
-| `image_quality`   |  1 ≤ `Int` ≤ 4      | Image quality for saving  | 1                 |
+| `image_quality`   |  1 ≤ `Int` ≤ 4      | Image quality for saving the figure (use in static mode)  | 1                 |
 
 ***
 
