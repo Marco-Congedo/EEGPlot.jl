@@ -7,9 +7,9 @@ A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroen
 ### Static and Interactive mode
 
 
-Two backends for `Makie.jl` are supported:
+Three backends for `Makie.jl` are supported:
 
-- `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures;
+- `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures (or, using `WGLMakie.jl`, to plot on a browser);
 - `GLMakie.jl`, which produces an **INTERACTIVE** plot — for data inspection.
 
 !!! tip "Switching backend"
@@ -33,6 +33,10 @@ Two backends for `Makie.jl` are supported:
     !!! note 
         This is very useful in several situations, such as inspecting a dataset along with its spatial filters or source separation components, 
         inspecting a dataset decomposed in artifacts plus a cleaned component, etc.
+
+Example of visualization of the *input data* (brown) and *denoised data* (dark grey) on the upper panel, as well as the *artifacts* in the lower panel.
+
+![GDEAI_small gif](assets/GDEAI_small.gif)
 
 ### Event Markers
 

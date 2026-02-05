@@ -120,7 +120,7 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
     #win_length > 0 && win_length ≥ mins || throw(ArgumentError("`win_length` must comprise at least sr/2 samples"))
     #1 < start_pos < size(X, 1) - mins || throw(ArgumentError("`start_pos` must verify 1 < start_pos < size(X, 1) (it is given samples)"))
     i_panel_font_size ≥ 4 || throw(ArgumentError("📉 argument `i_panel_font_size` must be at least 4"))
-    string(Makie.current_backend()) ∉ ("CairoMakie", "GLMakie") && throw(ErrorException("📉 eegplot supports only the CairoMakie and GLMakie backends for Makie"))
+    string(Makie.current_backend()) ∉ ("CairoMakie", "GLMakie", "WGLMakie") && throw(ErrorException("📉 eegplot supports only the CairoMakie, GLMakie and WGLMakie backends for Makie"))
     is_interactive = string(Makie.current_backend()) == "GLMakie"
 
     # ----------------------
