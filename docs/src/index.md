@@ -9,11 +9,12 @@ A *julia* package based on [Makie.jl](https://docs.makie.org/) to plot electroen
 
 Three backends for `Makie.jl` are supported:
 
-- `CairoMakie.jl`, which produces a **STATIC** plot — mainly for saving figures (or, using `WGLMakie.jl`, to plot on a browser);
-- `GLMakie.jl`, which produces an **INTERACTIVE** plot — for data inspection.
+- `CairoMakie`, which produces a **STATIC** plot — for saving high-quality figures,
+- `WGLMakie`, also **STATIC** — for comparing multiple plots on a web browser,
+- `GLMakie`, which produces an **INTERACTIVE** plot — for data visualization and inspection.
 
 !!! tip "Switching backend"
-    To switch from one backend to the other, use `GLMakie.activate!()` and `CairoMakie.activate!()`.
+    To switch from one backend to the other, just use `<backend>.activate!()`, e.g., `GLMakie.activate!()`.
 
 ***
 
