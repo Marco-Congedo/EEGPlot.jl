@@ -1,6 +1,6 @@
 name = "EEGPlot"
 uuid = "7b5c3b30-84a4-4b07-a630-c21dc8c95940"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Marco Congedo, Tomas Ros, Generative AI"]
 
 [deps]
@@ -15,5 +15,5 @@ Colors = "0.13.1"
 GLFW = "3.4.6"
 ImageClipboard = "1.0"
 Makie = "0.24.8"
-Statistics = "1.10"
+Statistics = "1"
 julia = "1.10"

@@ -243,14 +243,18 @@ M = mean(o;
 T_ERP = M[findfirst(isequal("target"), o.clabels)]
 NT_ERP = M[findfirst(isequal("nontarget"), o.clabels)]
 
-eegplot(T_ERP, o.sr, o.sensors; 
-        fig_size = (812, 450),
-        overlay = NT_ERP, 
+eegplot(T_ERP, o.sr, o.sensors;
+        fig_size = (300, 250),
+        overlay = NT_ERP,
         Y_labels = o.sensors,
         win_length = o.wl, # trial length in samples
-        px_per_sec = 720,
-        init_scale = 0.7,
-        X_title = "EPR target (grey) and nontarget (red)")
+        px_per_sec = 160,
+        init_scale = 0.8,
+        X_title = "target (grey) vs. nontarget (red)",
+        X_title_font_size = 10,
+        X_labels_font_size = 9,
+        s_labels_font_size = 8)
+
 ```
 For plotting ERPs, see also [UnfoldMakie](https://github.com/unfoldtoolbox/UnfoldMakie.jl).
 
