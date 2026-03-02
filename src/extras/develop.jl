@@ -17,3 +17,11 @@ begin
   push!(LOAD_PATH, abspath(@__DIR__, "..") )
   using Revise, EEGPlot
 end
+
+using GLMakie
+X, sr = randn(10000, 3), 128;
+sensors = ["a", "b", "c"]
+
+
+# plot EEG
+eegplot(X, sr, sensors; fig_size=(814, 450), _display = true)
