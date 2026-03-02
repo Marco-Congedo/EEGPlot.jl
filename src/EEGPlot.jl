@@ -109,6 +109,7 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
     win_length::Int=0,
     px_per_sec::Int=180, # Constant scale: about 180 pixels = 1 second
     image_quality::Int=1,
+    _display::Bool=true
 ) where {T<:Real}
 
     # Checks
@@ -116,9 +117,10 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
     1 ≤ image_quality ≤ 4 || throw(ArgumentError("📉 argument `image_quality` must verify 1 ≤ image_quality ≤ 4"))
     init_scale > 0 || throw(ArgumentError("📉 argument `init_scale` must be positive"))
     px_per_sec > 0 || throw(ArgumentError("📉 argument `px_per_sec` must be positive, usually in between 150 and 300"))
+    !isnothing(X_labels) && length(X_labels) ≠ size(X, 2) && throw(ArgumentError("📉 argument `X_labels` must contain as many labels as columns of `X`"))
+    win_length < 0 && throw(ArgumentError("`win_length` must be a positive number"))
     mins = floor(Int, sr / 2)
-    #win_length > 0 && win_length ≥ mins || throw(ArgumentError("`win_length` must comprise at least sr/2 samples"))
-    #1 < start_pos < size(X, 1) - mins || throw(ArgumentError("`start_pos` must verify 1 < start_pos < size(X, 1) (it is given samples)"))
+    1 ≤ start_pos < size(X, 1) - mins || throw(ArgumentError("`start_pos` must verify 1 ≤ start_pos < size(X, 1)-Int(sr/2)"))
     i_panel_font_size ≥ 4 || throw(ArgumentError("📉 argument `i_panel_font_size` must be at least 4"))
     string(Makie.current_backend()) ∉ ("CairoMakie", "GLMakie", "WGLMakie") && throw(ErrorException("📉 eegplot can be rendered by CairoMakie.jl or WGLMakie.jl (static plots) and by GLMakie.jl (interactive plots). Make sure you are `using` at least one of those."))
     is_interactive = string(Makie.current_backend()) == "GLMakie"
@@ -169,7 +171,7 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
         n_chans_o != n_chans && throw(ArgumentError("📉 argument `overlay`  must have the same number of channels (columns) as X."))
     end
 
-    print(titleFont, "\n📈  Producing an EEG plot... ")
+    _display && print(titleFont, "\n📈  Producing an EEG plot... ")
 
     local n_chans_Y = 0
     local final_Y_labels = String[]
@@ -751,8 +753,8 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
                 end
                 trim!(axes_grid)
 
-                # close
-            elseif ev.key == Keyboard.s
+            # do not remove as it triggers an error
+            elseif ev.key == Keyboard.s # it will never be triggered as Keyboard.s is used before
                 for win in GLFW.GetWindows()
                     GLFW.SetWindowShouldClose(win, true)
                 end
@@ -765,33 +767,37 @@ function eegplot(X::Matrix{T}, sr::Number, X_labels::Union{Vector{String},Nothin
     if !isnothing(splitter)
         splitter.blockscene.visible[] = y_panel_visible[]
     end
-    if is_interactive && get(ENV, "JULIA_PLOT_HEADLESS", "false") == "false"
-        display(fig)
-        try
-            # Position window at (30, 30)
-            window = GLFW.GetCurrentContext()
-            if window != nothing && window.handle != C_NULL
-                GLFW.SetWindowPos(window, 5, 35)
-            end
-
-            # Register viewport resize logic AFTER display to avoid world-age errors
-            if !is_fixed
-                on(axX.scene.viewport) do rect
-                    # Use invokelatest for extra stability during initialization period
-                    Base.invokelatest() do
-                        time_window[] = Float64(rect.widths[1]) / px_per_sec
-                    end
+    if _display
+        if is_interactive && get(ENV, "JULIA_PLOT_HEADLESS", "false") == "false"
+            display(fig)
+            try
+                # Position window at (30, 30)
+                window = GLFW.GetCurrentContext()
+                if window != nothing && window.handle != C_NULL
+                    GLFW.SetWindowPos(window, 5, 35)
                 end
-                # Manually trigger the first update
-                notify(axX.scene.viewport)
-            end
-        catch
-            # Ignore errors
-        end
-    end
-    resize_to_layout!(fig) # Forces window to shrink/expand to fit the fixed axis precisely
-    println(defaultFont, "Done ")
-    return fig
-end
 
+                # Register viewport resize logic AFTER display to avoid world-age errors
+                if !is_fixed
+                    on(axX.scene.viewport) do rect
+                        # Use invokelatest for extra stability during initialization period
+                        Base.invokelatest() do
+                            time_window[] = Float64(rect.widths[1]) / px_per_sec
+                        end
+                    end
+                    # Manually trigger the first update
+                    notify(axX.scene.viewport)
+                end
+            catch
+                # Ignore errors
+            end
+        end
+        resize_to_layout!(fig) # Forces window to shrink/expand to fit the fixed axis precisely
+        println(defaultFont, "Done ")
+        return fig
+    else
+        return nothing
+    end
+end # function
+    
 end # module
