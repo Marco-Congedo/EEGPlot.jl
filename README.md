@@ -1,6 +1,6 @@
-| Logo | Documentation | 
-|:-----:|:-----:|
-|  <img src="docs/src/assets/logo_small.png" height="90">   |  [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)| 
+| Logo | Documentation | Python Wrapper | 
+|:-----:|:-----:|:-----:|
+|  <img src="docs/src/assets/logo_small.png" height="90">   |  [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://Marco-Congedo.github.io/EEGPlot.jl)| [![](https://img.shields.io/badge/pyEEGPlot-blue.svg)](https://github.com/lore1907/pyEEGPlot)|
 
 ---
 
